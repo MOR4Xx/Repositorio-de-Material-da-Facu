@@ -1,22 +1,23 @@
-package ListaDinamica;
+package AulasED1;
 
 public class Teste {
     public static void main(String[] args) {
 
         Lista list1 = new Lista();
+        list1.inseriFinal(1);
+        list1.inseriFinal(3);
+        list1.inseriFinal(5);
+        list1.inseriFinal(6);
+        list1.inseriFinal(10);
         list1.inseriFinal(12);
-        list1.inseriFinal(100);
-        list1.inseriFinal(19000);
-        list1.inseriFinal(15);
-        list1.inseriFinal(159);
-        list1.inseriFinal(548967);
-        list1.inseriFinal(120);
-        // list1.inseriFinal(11);
+        //list1.inseriFinal(11);
 
         list1.imprimirList();
         System.out.println();
 
-        list1.listaPar(list1);
+        list1.ordemLista();
+        //list1.somaLista();
+        // list1.listaPar(list1);
 
 
         // Lisa list2 = new Lista();
