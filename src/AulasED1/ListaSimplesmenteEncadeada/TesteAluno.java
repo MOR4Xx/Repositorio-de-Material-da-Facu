@@ -11,7 +11,10 @@ public class TesteAluno {
         lista1.inserirOrdem(new Aluno(1006, 3.0));
 
         lista1.imprimirList();
+        lista1.tamanhoLista();
 
+        Aluno alunoRemovido = lista1.retira(1004);
+        System.out.println("Aluno removido: " + alunoRemovido);
     }
 
 }
