@@ -32,6 +32,15 @@ public class Lista {
         ultimo.prox = null;
     }
 
+    public void inseriComeco(Object x){
+
+        No aux = new No();
+        aux.item = x;
+        aux.prox = primeiro.prox;
+        primeiro.prox = aux;
+
+    }
+
     // Exercicio 03
     public void concatenarListas(Lista lista1, Lista lista2) {
         No atual = lista1.primeiro;
@@ -50,6 +59,7 @@ public class Lista {
 
         list3.imprimirList();
     }
+
 
     // Exercicio 6
     public void trocarDoisElementos(Object no1, Object no2) {
@@ -114,8 +124,22 @@ public class Lista {
             System.out.println("Não é ordenada");
     }
 
+    // Exercicio 10
+
+    public void duplicarLista() {
+        No atual = primeiro.prox;
+        Lista list2 = new Lista();
+
+        while (atual != null) {
+            list2.inseriFinal(atual.item);
+            atual = atual.prox;
+        }
+        System.out.println();
+        list2.imprimirList();
+    }
+
     // Exercicio 19
-    
+
     // Exercicio 31
     public void somaLista() {
         No atual = primeiro.prox;
