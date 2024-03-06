@@ -1,4 +1,4 @@
-package AulasED1;
+package ListaDinamica;
 
 public class Lista {
     private static class No {
@@ -30,6 +30,15 @@ public class Lista {
         ultimo = ultimo.prox;
         ultimo.item = x;
         ultimo.prox = null;
+    }
+
+    public void inseriComeco(Object x){
+        
+        No aux = new No();
+        aux.item = x;
+        aux.prox = primeiro.prox;
+        primeiro.prox = aux;
+
     }
 
     // Exercicio 03
@@ -114,8 +123,22 @@ public class Lista {
             System.out.println("Não é ordenada");
     }
 
+    // Exercicio 10
+
+    public void duplicarLista() {
+        No atual = primeiro.prox;
+        Lista list2 = new Lista();
+
+        while (atual != null) {
+            list2.inseriFinal(atual.item);
+            atual = atual.prox;
+        }
+        System.out.println();
+        list2.imprimirList();
+    }
+
     // Exercicio 19
-    
+
     // Exercicio 31
     public void somaLista() {
         No atual = primeiro.prox;
