@@ -13,8 +13,13 @@ public class TesteAluno {
         lista1.imprimirList();
         lista1.tamanhoLista();
 
-        Aluno alunoRemovido = lista1.retira(1004);
-        System.out.println("Aluno removido: " + alunoRemovido);
+        try {
+            lista1.retirar(1004);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        lista1.imprimirList();
+
     }
 
 }
