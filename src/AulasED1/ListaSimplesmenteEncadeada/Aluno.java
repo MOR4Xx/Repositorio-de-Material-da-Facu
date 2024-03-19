@@ -1,3 +1,8 @@
+//Aluno: Jorge Afonso Rabelo de Araujo
+//Disciplina: Estrutura de Dados 1
+//Data da ultima modificação: 18/03/2024
+//Resumo da Classe: Essa classe cria o objeto aluno, que vai ser armazenado dentro da lista, contem a nota e a matricula do aluno
+
 package AulasED1.ListaSimplesmenteEncadeada;
 
 public class Aluno {

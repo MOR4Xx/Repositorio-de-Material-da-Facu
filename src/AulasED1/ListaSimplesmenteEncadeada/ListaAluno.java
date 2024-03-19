@@ -1,3 +1,9 @@
+//Aluno: Jorge Afonso Rabelo de Araujo
+//Disciplina: Estrutura de Dados 1
+//Data da ultima modificação: 18/03/2024
+//Resumo da Classe: Essa classe contem os metodoro requeridos no trabalho, tais como Adicionar uma aluno na lista por ordem de nota,
+//retirar aluno da lista atravez da matricula, busca usando nota e matricula e um metodo de contagem do tamanho da lista.
+
 package AulasED1.ListaSimplesmenteEncadeada;
 
 public class ListaAluno {
@@ -9,14 +15,12 @@ public class ListaAluno {
     private No primeiro;
     private No ultimo;
 
-    public boolean vazia(){
-        if (primeiro==ultimo){
-            return false;
-        }
-        return true;
+    public boolean isEmpty() {
+        return primeiro == null;
     }
+
     public ListaAluno() {
-        primeiro = new ListaAluno.No();
+        primeiro = new No();
         ultimo = primeiro;
         primeiro.prox = null;
     }
@@ -25,8 +29,7 @@ public class ListaAluno {
         No newNo = new No();
         newNo.aluno = x;
 
-        //Confere se a lista está vazia ou verifica se o primeiro.prox é menor que a nota instanciada
-        if (primeiro.prox == null || primeiro.prox.aluno.getNota() < x.getNota()) {
+        if (isEmpty() || primeiro.prox.aluno.getNota() < x.getNota()) {
             newNo.prox = primeiro.prox;
             primeiro.prox = newNo;
         } else {
@@ -45,11 +48,12 @@ public class ListaAluno {
     }
 
     public void imprimirList() {
-        ListaAluno.No atual = primeiro.prox;
-        do {
+        No atual = primeiro.prox;
+        
+        while (atual != null){
             System.out.println(atual.aluno);
             atual = atual.prox;
-        } while (atual != null);
+        }
         System.out.println();
     }
 
@@ -66,24 +70,55 @@ public class ListaAluno {
         System.out.println();
     }
 
-    public void retirar (Object matricula) throws Exception {
-        if ( vazia() )
+    public void retirar(Object matricula) throws Exception {
+        if (isEmpty())
             throw new Exception("Erro : Lista vazia");
+
         No atual = primeiro;
-        while (atual.prox!=null && !atual.prox.aluno.getMatricula().equals(matricula) )
+
+        while (atual.prox != null && !atual.prox.aluno.getMatricula().equals(matricula))
             atual = atual.prox;
-        if (atual.prox == null )
-            System.out.println("Maticula não encontrada!!"); // não encontrada
-        // pego o No encontrada
+
+        if (atual.prox == null)
+            System.out.println("Maticula não encontrada!!");
+
         No q = atual.prox;
-        // guardo o item encontrado
-        Aluno item = q.aluno;
-        // removo a celula da lista
         atual.prox = q.prox;
-        if (atual.prox == null ) // atualiza o ultimo, se necessario
+
+        if (atual.prox == null)
             ultimo = atual;
-        System.out.println("Aluno "+matricula+" removido da lista!");
+
+        System.out.println("Aluno " + matricula + " removido da lista!");
         System.out.println();
     }
-}
 
+    public void buscaNota(Double nota) {
+        No atual = primeiro.prox;
+        ListaAluno listaNota = new ListaAluno();
+
+        while (atual != null) {
+            if (atual.aluno.getNota().equals(nota)) {
+                listaNota.inserirOrdem(atual.aluno);
+            }
+            atual = atual.prox;
+        }
+
+        listaNota.imprimirList();
+    }
+
+    public void buscaMatricula(Integer matricula) throws Exception {
+        No atual = primeiro.prox;
+        while (atual.prox != null && atual.aluno.getMatricula() != matricula)
+            atual = atual.prox;
+
+        if (atual == null) {
+            System.out.println("Matricula não encontrada");
+            return;
+        }
+
+        Aluno aluno_buscado = atual.aluno;
+        System.out.println("Matrícula: " + aluno_buscado.getMatricula());
+        System.out.println("Nota: " + aluno_buscado.getNota());
+        System.out.println("\n");
+    }
+}
