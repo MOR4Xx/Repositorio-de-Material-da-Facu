@@ -3,9 +3,8 @@ public class Professor extends Usuario {
     private String materia;
     private String especializacao;
 
-    public Professor(int id, String login, String senha, String nome, String sexo, String telefone, int idade,
-            String materia, String especializacao) {
-        super(id, login, senha, nome, sexo, telefone, idade);
+    public Professor(int id, String login, String senha, String nome, String materia, String especializacao) {
+        super(id, login, senha, nome);
         this.materia = materia;
         this.especializacao = especializacao;
     }
@@ -33,9 +32,6 @@ public class Professor extends Usuario {
                 "\nlogin=" + super.getLogin() +
                 "\nsenha=" + super.getSenha() +
                 "\nnome=" + super.getNome() +
-                "\nsexo=" + super.getSexo() +
-                "\ntelefone=" + super.getTelefone() +
-                "\nidade=" + super.getIdade() +
                 "\nmateria=" + materia +
                 "\nespecializacao=" + especializacao;
     }

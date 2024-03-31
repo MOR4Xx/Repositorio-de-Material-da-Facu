@@ -6,20 +6,15 @@ abstract class Usuario implements DAO {
     private String login;
     private String senha;
     private String nome;
-    private String sexo;
-    private String telefone;
-    private int idade;
-    private Livro livros_emp;
+
     private ArrayList<Usuario> lista_usuario = new ArrayList<>();
 
-    public Usuario(int id, String login, String senha, String nome, String sexo, String telefone, int idade) {
+    public Usuario(int id, String login, String senha, String nome) {
         this.id = id;
         this.login = login;
         this.senha = senha;
         this.nome = nome;
-        this.sexo = sexo;
-        this.telefone = telefone;
-        this.idade = idade;
+
     }
 
     @Override
@@ -82,38 +77,6 @@ abstract class Usuario implements DAO {
         return nome;
     }
 
-    public String getSexo() {
-        return sexo;
-    }
-
-    public void setSexo(String sexo) {
-        this.sexo = sexo;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public int getIdade() {
-        return idade;
-    }
-
-    public void setIdade(int idade) {
-        this.idade = idade;
-    }
-
-    public Livro getLivros_emp() {
-        return livros_emp;
-    }
-
-    public void setLivros_emp(Livro livros_emp) {
-        this.livros_emp = livros_emp;
-    }
-
     public void lerLivro() {
         System.out.println("O usuário está lendo o livro");
     }
@@ -125,10 +88,6 @@ abstract class Usuario implements DAO {
                 ", login='" + login + '\'' +
                 ", senha='" + senha + '\'' +
                 ", nome='" + nome + '\'' +
-                ", sexo='" + sexo + '\'' +
-                ", telefone='" + telefone + '\'' +
-                ", idade=" + idade +
-                ", livros_emp=" + livros_emp +
                 '}';
     }
 }

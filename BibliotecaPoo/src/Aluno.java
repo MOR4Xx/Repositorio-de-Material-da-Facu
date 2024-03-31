@@ -1,12 +1,12 @@
 
-public class Aluno extends Usuario {
+public class Aluno extends Pessoa {
+
     private String curso;
     private String matricula;
     private String email;
 
-    public Aluno(int id, String login, String senha, String nome, String sexo, String telefone, int idade, String curso,
-            String matricula, String email) {
-        super(id, login, senha, nome, sexo, telefone, idade);
+    public Aluno(String nome, String dataNasc, long cpf, String curso, String matricula, String email) {
+        super(nome, dataNasc, cpf);
         this.curso = curso;
         this.matricula = matricula;
         this.email = email;
