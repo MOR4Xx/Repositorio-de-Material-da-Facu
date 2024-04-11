@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+import board
+import adafruit_dht
+
+succes=False
+tries=30
+while (succes == False and tries > 0):
+  print('run', tries)
+  try:
+    DHT_SENSOR = adafruit_dht.DHT22(board.D4)
+    temperature = DHT_SENSOR.temperature
+    humidity    = DHT_SENSOR.humidity
+    if temperature is None:
+      raise
+    succes=True
+  except:
+    tries-=1
+    print ('Warning: Adafruit read error, remaining tries:', tries)
+    DHT_SENSOR.exit()
+
+DHT_SENSOR.exit()
+print('Temparature: ', temperature)
+print('Humidity; ', humidity)
