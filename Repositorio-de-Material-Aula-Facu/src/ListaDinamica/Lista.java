@@ -1,4 +1,4 @@
-package ListaDinamica;
+package AulasED1.ListaDinamica;
 
 public class Lista {
     private static class No {
@@ -33,7 +33,7 @@ public class Lista {
     }
 
     public void inseriComeco(Object x){
-        
+
         No aux = new No();
         aux.item = x;
         aux.prox = primeiro.prox;
@@ -59,6 +59,7 @@ public class Lista {
 
         list3.imprimirList();
     }
+
 
     // Exercicio 6
     public void trocarDoisElementos(Object no1, Object no2) {
