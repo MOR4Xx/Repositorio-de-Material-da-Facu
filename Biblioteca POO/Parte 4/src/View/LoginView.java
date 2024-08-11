@@ -15,23 +15,26 @@ public class LoginView extends JPanel {
         frame();
     }
     private void frame() {
-        setLayout(null);
+        setVisible(true);
+        setLayout(new BorderLayout());
+        JPanel panelCentral = new JPanel();
+        panelCentral.setLayout(null);
 
         JLabel loginLabel = new JLabel("Login:");
         loginLabel.setBounds(5, 50, 50, 20);
-        add(loginLabel);
+        panelCentral.add(loginLabel);
 
         loginField = new JTextField();
         loginField.setBounds(5, 70, 200, 20);
-        add(loginField);
+        panelCentral.add(loginField);
 
         JLabel senhaLabel = new JLabel("Senha:");
         senhaLabel.setBounds(5, 90, 60, 20);
-        add(senhaLabel);
+        panelCentral.add(senhaLabel);
 
         senhaField = new JPasswordField();
         senhaField.setBounds(5, 110, 200, 20);
-        add(senhaField);
+        panelCentral.add(senhaField);
 
         JLabel logado = new JLabel();
         logado.setBounds(5, 140, 200, 20);
@@ -41,18 +44,17 @@ public class LoginView extends JPanel {
         loginButton = new JButton("Login");
         loginButton.setSize(new Dimension(25, 20));
         loginButton.setBounds(35, 170, 120, 20);
-        add(loginButton);
+        panelCentral.add(loginButton);
 
+        add(panelCentral, BorderLayout.CENTER);
         loginButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 String login = loginField.getText();
                 String senha = senhaField.getText();
 
-                // Verifica se o login e senha são corretos
-                // Lógica de autenticação
+
                 if ("admin".equals(login) && "admin".equals(senha)) {
-                    // Login bem-sucedido: mostra a JMenuBar do JFrame principal
 //                    if (menuPrincipal != null) {
 //                        menuPrincipal.mostrarAdmMenu(true);
 //                        logado.setText("Login efetuado com sucesso");
@@ -60,10 +62,7 @@ public class LoginView extends JPanel {
 
                     loginField.setText("");
                     senhaField.setText("");
-
-                    // Ações adicionais após o login, como mudar de tela, etc.
                 } else {
-                    // Login falhou: ações de feedback ao usuário, se necessário
                     System.out.println("Login falhou");
                 }
             }

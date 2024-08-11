@@ -1,16 +1,32 @@
 package View;
 
 import javax.swing.*;
+import java.awt.*;
 
-public class VisualizarEmprestimoView extends JPanel {
+public class VisualizarEmprestimoView extends JFrame {
 
-    public VisualizarEmprestimoView() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        add(new JLabel("Visualizar Empréstimo"));
-        JTextArea emprestimoArea = new JTextArea(10, 40);
-        emprestimoArea.setText("Detalhes do Empréstimo...");
-        add(new JScrollPane(emprestimoArea));
-        add(new JButton("Renovar"));
-        add(new JButton("Devolver"));
+    public VisualizarEmprestimoView(JLabel id, JLabel dataEmprestimo, JLabel horaEmprestimo, JLabel livro, JLabel usuario, JLabel dataDevolucao) {
+        setTitle("Visualizar Empréstimo");
+        setLayout(new BorderLayout());
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(400, 300);
+
+        JPanel detalhesPanel = new JPanel();
+        detalhesPanel.setLayout(new GridLayout(20, 1));
+
+        detalhesPanel.add(new JLabel(id.getText()));
+        detalhesPanel.add(new JLabel(dataEmprestimo.getText()));
+        detalhesPanel.add(new JLabel(horaEmprestimo.getText()));
+        detalhesPanel.add(new JLabel(livro.getText()));
+        detalhesPanel.add(new JLabel(usuario.getText()));
+        detalhesPanel.add(new JLabel(dataEmprestimo.getText()));
+        detalhesPanel.add(new JLabel(dataDevolucao.getText()));
+
+        JButton devolver = new JButton("Devolver");
+        add(devolver, BorderLayout.SOUTH);
+
+        add(detalhesPanel, BorderLayout.CENTER);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setVisible(true);
     }
 }

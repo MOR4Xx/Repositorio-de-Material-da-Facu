@@ -16,34 +16,33 @@ public class ListarEmprestimoView extends JPanel {
         for (int i = 0; i < 40; i++) {
             JPanel emprestimoPanel = new JPanel();
             emprestimoPanel.setLayout(new BorderLayout());
-            emprestimoPanel.setPreferredSize(new Dimension(380, 80));
+            emprestimoPanel.setPreferredSize(new Dimension(300, 80));
 
             JPanel infoEmprestimos = new JPanel();
             infoEmprestimos.setLayout(new GridLayout(4, 1));
 
             JLabel idEmprestimo = new JLabel("ID: " + i);
             idEmprestimo.setFont(new Font("Arial", Font.BOLD, 11));
-            JLabel nomeCliente = new JLabel("Nome do Cliente " + i);
-            nomeCliente.setFont(new Font("Arial", Font.BOLD, 11));
+            JLabel usuario = new JLabel("Nome do Usuario " + i);
+            usuario.setFont(new Font("Arial", Font.BOLD, 11));
             JLabel dataEmprestimo = new JLabel("Data do Empréstimo " + i);
             dataEmprestimo.setFont(new Font("Arial", Font.PLAIN, 12));
+            JLabel horaEmprestimo = new JLabel("Data do Empréstimo " + i);
+            horaEmprestimo.setFont(new Font("Arial", Font.PLAIN, 12));
+            JLabel livro = new JLabel("Livro " + i);
+            livro.setFont(new Font("Arial", Font.PLAIN, 12));
             JLabel dataDevolucao = new JLabel("Data de Devolução " + i);
             dataDevolucao.setFont(new Font("Arial", Font.PLAIN, 12));
 
             infoEmprestimos.add(idEmprestimo);
-            infoEmprestimos.add(nomeCliente);
+            infoEmprestimos.add(usuario);
             infoEmprestimos.add(dataEmprestimo);
             infoEmprestimos.add(dataDevolucao);
             emprestimoPanel.add(infoEmprestimos, BorderLayout.CENTER);
 
             JButton visualizarButton = new JButton("Visualizar");
-            int finalI = i;
-            visualizarButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JOptionPane.showMessageDialog(ListarEmprestimoView.this, "Você selecionou o Empréstimo ID: " + finalI);
-                }
-            });
+
+            visualizarButton.addActionListener(e -> new VisualizarEmprestimoView(idEmprestimo ,dataEmprestimo, horaEmprestimo, livro, usuario,dataDevolucao));
             emprestimoPanel.add(visualizarButton, BorderLayout.EAST);
 
             emprestimoList.add(emprestimoPanel);
