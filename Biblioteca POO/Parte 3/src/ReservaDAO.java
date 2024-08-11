@@ -1,69 +1,77 @@
-
 import java.io.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReservaDAO {
-    private static final String FILE_NAME = "reservas.txt";
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+public class ReservaDAO implements DAO<Reserva> {
+    private static final String BASE_PATH = "Biblioteca POO/Parte 3/Reservas/reserva";
 
-    public void salvar(Reserva reserva){
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
-            writer.write(reserva.getId() + "," + reserva.getIdUsuario() + "," + reserva.getIdObra() + "," + reserva.getDataReserva().format(String.valueOf(DATE_FORMAT)));
-            writer.newLine();
+    @Override
+    public void salvar(Reserva reserva) {
+        try {
+            FileOutputStream file = new FileOutputStream(BASE_PATH + reserva.getId());
+            ObjectOutputStream stream = new ObjectOutputStream(file);
+            stream.writeObject(reserva);
+            stream.flush();
+            stream.close();
+            file.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void excluir(int id) {
-        File inputFile = new File(FILE_NAME);
-        File tempFile = new File("reservas_temp.txt");
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-            
-            String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
-                String[] data = currentLine.split(",");
-                int reservaId = Integer.parseInt(data[0]);
-                if (reservaId != id) {
-                    writer.write(currentLine);
-                    writer.newLine();
-                }
+    @Override
+    public String excluir(int id) {
+        File file = new File(BASE_PATH + id);
+        if (file.exists()) {
+            if (file.delete()) {
+                return "Reserva excluída com sucesso!";
+            } else {
+                return "Falha ao excluir a reserva.";
             }
-            
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } else {
+            return "Reserva não encontrada.";
         }
-        tempFile.renameTo(inputFile);
     }
 
-    public void atualizar(Reserva reserva) throws IOException {
+    @Override
+    public void atualizar(Reserva reserva) {
         excluir(reserva.getId());
         salvar(reserva);
     }
 
+    @Override
+    public Reserva ler(int id) {
+        try {
+            FileInputStream file = new FileInputStream(BASE_PATH + id);
+            ObjectInputStream stream = new ObjectInputStream(file);
+            Reserva reserva = (Reserva) stream.readObject();
+            stream.close();
+            file.close();
+            return reserva;
+        } catch (Exception e) {
+            System.out.println("Falha na leitura\n " + e.toString());
+            return null;
+        }
+    }
+
     public List<Reserva> listar() {
         List<Reserva> reservas = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
-                String[] data = currentLine.split(",");
-                int id = Integer.parseInt(data[0]);
-                int idUsuario = Integer.parseInt(data[1]);
-                int idObra = Integer.parseInt(data[2]);
-                String dataReserva = String.valueOf(data[3]);
-                Reserva reserva = new Reserva(id, idUsuario, idObra, dataReserva);
-                reservas.add(reserva);
+        File dir = new File("Biblioteca POO/Parte 3/Reservas/");
+        File[] files = dir.listFiles((dir1, name) -> name.startsWith("reserva"));
+
+        if (files != null) {
+            for (File file : files) {
+                try {
+                    FileInputStream fis = new FileInputStream(file);
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    Reserva reserva = (Reserva) ois.readObject();
+                    reservas.add(reserva);
+                    ois.close();
+                    fis.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return reservas;
     }

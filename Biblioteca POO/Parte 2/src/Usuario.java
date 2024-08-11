@@ -58,4 +58,6 @@ public abstract class Usuario implements DAO<Usuario>{
     public void lerLivro() {
         System.out.println("Lendo o livro");
     }
+
+    public abstract String excluir(int id);
 }

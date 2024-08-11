@@ -1,74 +1,80 @@
-
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UsuarioDAO implements DAO<Usuario> {
+
+    private static final String BASE_PATH = "Biblioteca POO/Parte 3/Usuarios/usuario";
 
     @Override
     public void salvar(Usuario usuario) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("usuarios.txt", true));
-            writer.write(usuario.getId() + "," + usuario.getNome() + "," + usuario.getIdade() + "," + usuario.getSexo() + ","
-                    + usuario.getTelefone() + "," + getUsuarioType(usuario) + "," + getUserSpecificInfo(usuario));
-            writer.newLine();
-            writer.close();
+            FileOutputStream file = new FileOutputStream(BASE_PATH + usuario.getId());
+            ObjectOutputStream stream = new ObjectOutputStream(file);
+            stream.writeObject(usuario);
+            stream.flush();
+            stream.close();
+            file.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
-    public void excluir(int id){
-
-        try {
-            File inputFile = new File("usuarios.txt");
-            File tempFile = new File("usuarios_temp.txt");
-
-            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-
-            String currentLine;
-
-            while ((currentLine = reader.readLine()) != null) {
-                String[] data = currentLine.split(",");
-                if (Integer.parseInt(data[0]) == id) {
-                    continue;
-                }
-                writer.write(currentLine);
-                writer.newLine();
-                reader.close();
-                tempFile.renameTo(inputFile);
+    public String excluir(int id){
+        File file = new File(BASE_PATH + id);
+        if (file.exists()) {
+            if (file.delete()) {
+                return "Usuário excluído com sucesso!";
+            } else {
+                return "Falha ao excluir o usuário.";
             }
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } else {
+            return "Usuário não encontrado.";
         }
-
     }
 
     @Override
     public Usuario ler(int id) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("usuarios.txt"))) {
-            String currentLine;
-
-            while ((currentLine = reader.readLine()) != null) {
-                String[] data = currentLine.split(",");
-                if (Integer.parseInt(data[0]) == id) {
-                    reader.close();
-                    return createUserFromData(data);
-                }
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        try {
+            FileInputStream file = new FileInputStream(BASE_PATH + id);
+            ObjectInputStream stream = new ObjectInputStream(file);
+            Usuario usuario = (Usuario) stream.readObject();
+            stream.close();
+            file.close();
+            return usuario;
+        } catch (Exception erro) {
+            System.out.println("Falha na leitura\n " + erro.toString());
+            return null;
         }
-        return null;
     }
 
     @Override
     public void atualizar(Usuario usuario) {
         excluir(usuario.getId());
         salvar(usuario);
+    }
+
+    public List<Usuario> listar() {
+        List<Usuario> usuarios = new ArrayList<>();
+        File dir = new File("Biblioteca POO/Parte 3/Usuarios/");
+        File[] files = dir.listFiles((dir1, name) -> name.startsWith("usuario"));
+
+        if (files != null) {
+            for (File file : files) {
+                try {
+                    FileInputStream fis = new FileInputStream(file);
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    Usuario usuario = (Usuario) ois.readObject();
+                    usuarios.add(usuario);
+                    ois.close();
+                    fis.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return usuarios;
     }
 
     private String getUsuarioType(Usuario usuario) {

@@ -1,9 +1,5 @@
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.io.*;
 
 public class Emprestimo implements DAO<Emprestimo>{
     private int id;
@@ -23,23 +19,44 @@ public class Emprestimo implements DAO<Emprestimo>{
     @Override
     public void gravar(Emprestimo emprestimo) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("estudantes.txt", true));
-            writer.write(usuario.getId() + "," + usuario.getNome() + "," + usuario.getIdade() + "," + usuario.getSexo() + "," + usuario.getTelefone());
-            writer.newLine();
-            writer.close();
+            FileOutputStream file = new FileOutputStream( "Biblioteca POO/Parte 2/Emprestimos/emprestimo"+ emprestimo.getId());
+            ObjectOutputStream stream = new ObjectOutputStream(file);
+            stream.writeObject(emprestimo);
+            stream.flush();
+            stream.close();
+            file.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void excluir() {
-
+    public String excluir(int id) {
+        File file = new File("Biblioteca POO/Parte 2/Emprestimos/emprestimo" + id);
+        if (file.exists()) {
+            if (file.delete()) {
+                return "Empréstimo excluído com sucesso!";
+            } else {
+                return "Falha ao excluir o empréstimo.";
+            }
+        } else {
+            return "Empréstimo não encontrado.";
+        }
     }
 
     @Override
     public Emprestimo ler(int ID) {
-        return null;
+        try {
+            FileInputStream file = new FileInputStream( "Biblioteca POO/Parte 2/Emprestimos/emprestimo"+ id);
+            ObjectInputStream stream = new ObjectInputStream(file);
+            Emprestimo emprestimo = (Emprestimo) stream.readObject();
+            stream.close();
+            file.close();
+            return emprestimo;
+        } catch (Exception erro) {
+            System.out.println("Falha na leitura\n " + erro.toString());
+            return null;
+        }
     }
 
     @Override
@@ -86,8 +103,6 @@ public class Emprestimo implements DAO<Emprestimo>{
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-
-
 
     public void devolverLivro() {
         livro.setEmprestimo(false);

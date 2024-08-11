@@ -1,87 +1,53 @@
-
 import java.io.*;
-
 
 public class LivroDAO implements DAO<Livro> {
 
+    private static final String FILE_PATH = "Biblioteca POO\\Parte 3\\Livros\\livro";
+
     @Override
-    public void salvar(Livro livro)  {
-        try{
-            BufferedWriter writer = new BufferedWriter(new FileWriter("livros.txt", true));
-            writer.write(livro.getId() + "," + livro.getTitulo() + "," + livro.getAutores() + "," + livro.getEditora() + ","
-                    + livro.getArea() + "," + livro.getAno() + "," + livro.getNumFolhas() + "," + livro.getEdicao() + "," + livro.isEmprestimo());
-            writer.newLine();
-            writer.close();
+    public void salvar(Livro livro) {
+        try {
+            FileOutputStream file = new FileOutputStream(FILE_PATH + livro.getId());
+            ObjectOutputStream stream = new ObjectOutputStream(file);
+            stream.writeObject(livro);
+            stream.flush();
+            stream.close();
+            file.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void excluir(int id) throws IOException {
-        File inputFile = new File("livros.txt");
-        File tempFile = new File("livros_temp.txt");
-
-        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-
-        String currentLine;
-
-        while ((currentLine = reader.readLine()) != null) {
-            String[] data = currentLine.split(",");
-            if (Integer.parseInt(data[0]) == id) {
-                continue;
+    public String excluir(int id) {
+        File file = new File(FILE_PATH + id);
+        if (file.exists()) {
+            if (file.delete()) {
+                return "Livro excluído com sucesso!";
+            } else {
+                return "Falha ao excluir o livro.";
             }
-            writer.write(currentLine);
-            writer.newLine();
+        } else {
+            return "Livro não encontrado.";
         }
-        writer.close();
-        reader.close();
-        tempFile.renameTo(inputFile);
     }
 
     @Override
-    public Livro ler(int id) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("livros.txt"));
-        String currentLine;
-
-        while ((currentLine = reader.readLine()) != null) {
-            String[] data = currentLine.split(",");
-
-            if (data.length < 9) {
-                System.out.println(currentLine);
-                continue;
-            }
-
-            if (Integer.parseInt(data[0]) == id) {
-                reader.close();
-                return new Livro(
-                        Integer.parseInt(data[0]),
-                        data[1],
-                        data[2],
-                        data[3],
-                        data[4],
-                        Integer.parseInt(data[5]),
-                        Integer.parseInt(data[6]),
-                        Integer.parseInt(data[7]),
-                        Boolean.parseBoolean(data[8])
-                );
-            }
+    public Livro ler(int id) {
+        try {
+            FileInputStream file = new FileInputStream(FILE_PATH + id);
+            ObjectInputStream stream = new ObjectInputStream(file);
+            return (Livro) stream.readObject();
+        } catch (Exception erro) {
+            System.out.println("Falha na leitura\n " + erro.toString());
+            return null;
         }
-        reader.close();
-        return null;
     }
 
-    public void atualizar(Livro livro) throws IOException {
+    @Override
+    public void atualizar(Livro livro) {
         excluir(livro.getId());
         salvar(livro);
     }
-
-    public void atualizarStatus(int id, boolean emprestado) throws IOException {
-        Livro livro = ler(id);
-        if (livro != null) {
-            livro.setEmprestimo(emprestado);
-            atualizar(livro);
-        }
-    }
 }
+

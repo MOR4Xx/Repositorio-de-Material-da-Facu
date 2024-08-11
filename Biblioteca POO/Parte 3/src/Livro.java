@@ -81,7 +81,7 @@ public class Livro extends Obra implements DAO<Livro> {
     }
 
     @Override
-    public void excluir(int id) throws IOException {
+    public String excluir(int id) throws IOException {
         File inputFile = new File("livros.txt");
         File tempFile = new File("livros_temp.txt");
 
@@ -101,6 +101,7 @@ public class Livro extends Obra implements DAO<Livro> {
         writer.close();
         reader.close();
         tempFile.renameTo(inputFile);
+        return currentLine;
     }
 
     @Override

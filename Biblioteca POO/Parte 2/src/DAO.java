@@ -1,8 +1,8 @@
 public interface DAO<T> {
 
     void gravar(T t);
-    void excluir();
-    T ler(int ID);
+    String excluir(int id);
+    T ler(int iD);
     void atualizar();
 
 }

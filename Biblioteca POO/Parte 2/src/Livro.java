@@ -1,6 +1,4 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class Livro extends Obra implements DAO<Livro> {
 
@@ -26,31 +24,51 @@ public class Livro extends Obra implements DAO<Livro> {
         this.emprestimo = false;
     }
 
-    @Override
     public void gravar(Livro livro) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("livros.txt", true));
-            writer.write(livro.getId() + "," + livro.getTitulo()+","+ livro.getAutores()+","+livro.getArea()+","+livro.getEditora()+","+livro.getAno()+","+livro.getEdicao()+","+livro.getNumeroFolhas()+","+livro.isEmprestimo()+"\n");
-            writer.newLine();
-            writer.close();
+            FileOutputStream file = new FileOutputStream( "Biblioteca POO/Parte 2/Livros/livro"+ livro.getId());
+            ObjectOutputStream stream = new ObjectOutputStream(file);
+            stream.writeObject(livro);
+            stream.flush();
+            stream.close();
+            file.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void excluir() {
-
-    }
-
-    @Override
-    public Livro ler(int ID) {
-        return null;
+    public String excluir(int id) {
+        File file = new File("Biblioteca POO/Parte 2/Livros/livro" + id);
+        if (file.exists()) {
+            if (file.delete()) {
+                return "Livro excluído com sucesso!";
+            } else {
+                return "Falha ao excluir o Livro.";
+            }
+        } else {
+            return "Livro não encontrado.";
+        }
     }
 
     @Override
     public void atualizar() {
 
+    }
+
+    @Override
+    public Livro ler(int id) {
+        try {
+            FileInputStream file = new FileInputStream( "Biblioteca POO/Parte 2/Livros/livro"+ id);
+            ObjectInputStream stream = new ObjectInputStream(file);
+            Livro livro = (Livro) stream.readObject();
+            stream.close();
+            file.close();
+            return livro;
+        } catch (Exception erro) {
+            System.out.println("Falha na leitura\n " + erro.toString());
+            return null;
+        }
     }
 
     public int getId() {

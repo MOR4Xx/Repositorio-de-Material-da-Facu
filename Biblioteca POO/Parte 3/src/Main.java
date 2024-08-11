@@ -1,7 +1,4 @@
-
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -36,9 +33,8 @@ public class Main {
     }
 
     private static void login() {
-
         while (true) {
-            System.out.print("Login ");
+            System.out.print("Login: ");
             String username = scanner.nextLine();
             System.out.print("Senha: ");
             String password = scanner.nextLine();
@@ -47,14 +43,13 @@ public class Main {
                 System.out.println("Logado com sucesso!");
                 break;
             } else {
-                System.out.println("Não foi possivel fazer login!");
+                System.out.println("Não foi possível fazer login!");
             }
         }
     }
 
     private static void mostrarMenuFuncionario() {
-
-        System.out.println("Menu Funcionario:");
+        System.out.println("Menu Funcionário:");
         System.out.println("1. Cadastro de Livro");
         System.out.println("2. Cadastro de Usuário");
         System.out.println("3. Fazer Empréstimo");
@@ -74,14 +69,14 @@ public class Main {
         System.out.print("Escolha uma opção: ");
     }
 
-    private static void menuFuncionario(int opcao){
-
+    private static void menuFuncionario(int opcao) {
         switch (opcao) {
             case 1:
                 cadastrarLivro();
                 break;
             case 2:
                 cadastrarUsuario();
+                break;
             case 3:
                 realizarEmprestimo();
                 break;
@@ -99,7 +94,7 @@ public class Main {
         }
     }
 
-    private static void menuUsuarios(int opcao){
+    private static void menuUsuarios(int opcao) {
         switch (opcao) {
             case 1:
                 listarLivros();
@@ -121,7 +116,7 @@ public class Main {
         }
     }
 
-    private static void cadastrarLivro(){
+    private static void cadastrarLivro() {
         System.out.print("ID: ");
         int id = scanner.nextInt();
         scanner.nextLine(); // Limpar o buffer
@@ -141,14 +136,14 @@ public class Main {
         int edicao = scanner.nextInt();
         scanner.nextLine();
 
-        Livro livro = new Livro(id, titulo, area, autor, editora, ano, edicao, paginas, false);
+        Livro livro = new Livro(id, titulo, autor, editora, area, ano, paginas, edicao, false);
         LivroDAO livroDAO = new LivroDAO();
         livroDAO.salvar(livro);
         livros.add(livro);
         System.out.println("Livro cadastrado com sucesso!");
     }
 
-    private static void cadastrarUsuario(){
+    private static void cadastrarUsuario() {
         System.out.print("ID: ");
         int id = scanner.nextInt();
         scanner.nextLine();
@@ -161,7 +156,7 @@ public class Main {
         String sexo = scanner.nextLine();
         System.out.print("Telefone: ");
         String telefone = scanner.nextLine();
-        System.out.println("1-Aluno \n 2-Professor \n 3-Funcionário");
+        System.out.println("1. Aluno \n2. Professor \n3. Funcionário");
         System.out.print("Tipo de Usuário: ");
         int tipo = scanner.nextInt();
         scanner.nextLine();
@@ -184,14 +179,14 @@ public class Main {
                 usuario = new Professor(id, nome, idade, sexo, telefone, departamento, especializacao);
                 break;
             case 3:
-                System.out.print("Setor do funcionario: ");
+                System.out.print("Setor do funcionário: ");
                 String setor = scanner.nextLine();
-                System.out.print("Cargo do funcionario: ");
+                System.out.print("Cargo do funcionário: ");
                 String cargo = scanner.nextLine();
                 usuario = new Funcionario(id, nome, idade, sexo, telefone, setor, cargo);
                 break;
             default:
-                System.out.println("Selecione um tipo correto de usuario");
+                System.out.println("Selecione um tipo correto de usuário");
                 return;
         }
 
@@ -201,7 +196,7 @@ public class Main {
         System.out.println("Usuário cadastrado!");
     }
 
-    private static void realizarEmprestimo(){
+    private static void realizarEmprestimo() {
         System.out.print("ID do Empréstimo: ");
         int id = scanner.nextInt();
         scanner.nextLine(); // Limpar o buffer
@@ -212,42 +207,34 @@ public class Main {
         int idUsuario = scanner.nextInt();
         scanner.nextLine(); // Limpar o buffer
 
-        Livro livro = null;
-        try {
-            livro = new LivroDAO().ler(idLivro);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        LivroDAO livroDAO = new LivroDAO();
+        Livro livro = livroDAO.ler(idLivro);
         Usuario usuario = new UsuarioDAO().ler(idUsuario);
 
         if (livro == null || usuario == null) {
             System.out.println("Livro ou Usuário não encontrado.");
             return;
         }
-        System.out.println("Digite a data do imprestimo(Ex: 10072024)");
+
+        System.out.println("Digite a data do empréstimo (Ex: 10072024): ");
         String data = scanner.nextLine();
-        System.out.println("Digite a hora do imprestimo(Ex: 1030)");
+        System.out.println("Digite a hora do empréstimo (Ex: 1030): ");
         String hora = scanner.nextLine();
 
         Emprestimo emprestimo = new Emprestimo(id, data, hora, livro, usuario);
         EmprestimoDAO emprestimoDAO = new EmprestimoDAO();
         emprestimoDAO.salvar(emprestimo);
         emprestimos.add(emprestimo);
-        System.out.println("Empréstimo realizado");
+        System.out.println("Empréstimo realizado com sucesso!");
     }
 
-    private static void devolucao(){
+    private static void devolucao() {
         System.out.print("ID do Empréstimo: ");
         int idEmprestimo = scanner.nextInt();
         scanner.nextLine();
 
         EmprestimoDAO emprestimoDAO = new EmprestimoDAO();
-        Emprestimo emprestimo = null;
-        try {
-            emprestimo = emprestimoDAO.ler(idEmprestimo);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Emprestimo emprestimo = emprestimoDAO.ler(idEmprestimo);
 
         if (emprestimo == null) {
             System.out.println("Empréstimo não encontrado.");
@@ -256,20 +243,12 @@ public class Main {
 
         LivroDAO livroDAO = new LivroDAO();
         Livro livro = emprestimo.getLivro();
-        try {
-            livroDAO.atualizarStatus(livro.getId(), false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        livroDAO.atualizar(livro);
 
-        try {
-            emprestimoDAO.excluir(idEmprestimo);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        emprestimoDAO.excluir(idEmprestimo);
         emprestimos.remove(emprestimo);
 
-        System.out.println("Devolução realizada!");
+        System.out.println("Devolução realizada com sucesso!");
     }
 
     private static void listaEmprestimos() {
@@ -285,4 +264,5 @@ public class Main {
             System.out.println(livro);
         }
     }
+
 }
