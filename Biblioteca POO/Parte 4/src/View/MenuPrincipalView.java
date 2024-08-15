@@ -1,5 +1,7 @@
 package View;
 
+import View.ViewsGerais.*;
+
 import javax.swing.*;
 import java.awt.*;
 
