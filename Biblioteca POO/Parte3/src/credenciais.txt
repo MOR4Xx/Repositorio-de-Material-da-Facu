@@ -1,0 +1,2 @@
+funcionario,admin,admin
+usuario,estudante,estudante
