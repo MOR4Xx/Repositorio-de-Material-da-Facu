@@ -2,8 +2,6 @@ package View.ViewsGerais;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class BuscarEmprestimoView extends JPanel {
     private JTextField pesquisaField;
@@ -23,32 +21,17 @@ public class BuscarEmprestimoView extends JPanel {
 
         pesquisarButton = new JButton("Pesquisar");
         add(pesquisarButton, BorderLayout.SOUTH);
-
-        // Ação do botão de busca
-        pesquisaField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String codigoEmprestimo = pesquisaField.getText();
-                // Simular resultado da pesquisa
-                String resultado = buscarEmprestimo(codigoEmprestimo);
-
-                // Exibir o resultado em uma nova janela
-                mostrarResultado(resultado);
-            }
-        });
     }
 
-    private String buscarEmprestimo(String codigoEmprestimo) {
-        // Aqui você implementaria a lógica de busca. Este é um exemplo simulado.
-        // Vamos supor que se o código for "123", existe um empréstimo.
-        if ("123".equals(codigoEmprestimo)) {
-            return "Empréstimo encontrado:\nCódigo: 123\nUsuário: João Silva\nLivro: Aprendendo Java\nData: 10/08/2023";
-        } else {
-            return "Empréstimo não encontrado.";
-        }
+    public JTextField getPesquisaField() {
+        return pesquisaField;
     }
 
-    private void mostrarResultado(String resultado) {
+    public JButton getPesquisarButton() {
+        return pesquisarButton;
+    }
+
+    public void mostrarResultado(String resultado) {
         JFrame resultadoFrame = new JFrame("Resultado da Pesquisa");
         resultadoFrame.setSize(400, 200);
         resultadoFrame.setLayout(new BorderLayout());

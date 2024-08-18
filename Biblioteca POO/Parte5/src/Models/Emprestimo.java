@@ -6,19 +6,22 @@ import java.time.LocalTime;
 public class Emprestimo {
 
     private int id;
-    private String dataEmprestimo;
-    private String horaEmprestimo;
-    private Livro livro;
-    private Usuario usuario;
-    private String dataDevolucao;
+    private LocalDate dataEmprestimo;
+    private LocalTime horaEmprestimo;
+    private int livro;
+    private int usuario;
+    private LocalDate dataDevolucao;
 
-    public Emprestimo(int id, LocalDate dataEmprestimo, LocalTime horaEmprestimo, int livro, Usuario usuario, String dataDevolucao) {
+    public Emprestimo(int id, LocalDate dataEmprestimo, LocalTime horaEmprestimo, int livro, int usuario, LocalDate dataDevolucao) {
         this.id = id;
         this.dataEmprestimo = dataEmprestimo;
         this.horaEmprestimo = horaEmprestimo;
         this.livro = livro;
         this.usuario = usuario;
         this.dataDevolucao = dataDevolucao;
+    }
+
+    public Emprestimo() {
     }
 
     public int getId() {
@@ -29,7 +32,7 @@ public class Emprestimo {
         this.id = id;
     }
 
-    public String getDataEmprestimo() {
+    public LocalDate getDataEmprestimo() {
         return dataEmprestimo;
     }
 
@@ -37,35 +40,39 @@ public class Emprestimo {
         this.dataEmprestimo = dataEmprestimo;
     }
 
-    public String getHoraEmprestimo() {
+    public LocalTime getHoraEmprestimo() {
         return horaEmprestimo;
     }
 
-    public void setHoraEmprestimo(String horaEmprestimo) {
+    public void setHoraEmprestimo(LocalTime horaEmprestimo) {
         this.horaEmprestimo = horaEmprestimo;
     }
 
-    public Livro getLivro() {
-        return livro;
+    public void setDataEmprestimo(LocalDate dataEmprestimo) {
+        this.dataEmprestimo = dataEmprestimo;
     }
 
-    public void setLivro(Livro livro) {
+    public void setLivro(int livro) {
         this.livro = livro;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
+    public void setUsuario(int usuario) {
         this.usuario = usuario;
     }
 
-    public String getDataDevolucao() {
-        return dataDevolucao;
+    public void setDataDevolucao(LocalDate dataDevolucao) {
+        this.dataDevolucao = dataDevolucao;
     }
 
-    public void setDataDevolucao(String dataDevolucao) {
-        this.dataDevolucao = dataDevolucao;
+    public int getLivro() {
+        return livro;
+    }
+
+    public int getUsuario() {
+        return usuario;
+    }
+
+    public LocalDate getDataDevolucao() {
+        return dataDevolucao;
     }
 }

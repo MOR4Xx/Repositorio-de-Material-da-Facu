@@ -1,57 +1,39 @@
 package View.ViewsGerais;
 
+import Models.Emprestimo;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
 public class ListarEmprestimoView extends JPanel {
+    private JTable tabelaEmprestimos;
+    private DefaultTableModel tabelaModelo;
 
     public ListarEmprestimoView() {
         setLayout(new BorderLayout());
 
-        JPanel emprestimoList = new JPanel();
-        emprestimoList.setLayout(new BoxLayout(emprestimoList, BoxLayout.Y_AXIS));
+        JLabel titulo = new JLabel("Lista de Empréstimos", JLabel.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 24));
+        add(titulo, BorderLayout.NORTH);
 
-        for (int i = 0; i < 40; i++) {
-            JPanel emprestimoPanel = new JPanel();
-            emprestimoPanel.setLayout(new BorderLayout());
-            emprestimoPanel.setPreferredSize(new Dimension(300, 80));
-
-            JPanel infoEmprestimos = new JPanel();
-            infoEmprestimos.setLayout(new GridLayout(4, 1));
-
-            JLabel idEmprestimo = new JLabel("ID: " + i);
-            idEmprestimo.setFont(new Font("Arial", Font.BOLD, 11));
-            JLabel usuario = new JLabel("Nome do Usuario " + i);
-            usuario.setFont(new Font("Arial", Font.BOLD, 11));
-            JLabel dataEmprestimo = new JLabel("Data do Empréstimo " + i);
-            dataEmprestimo.setFont(new Font("Arial", Font.PLAIN, 12));
-            JLabel horaEmprestimo = new JLabel("Hora do Empréstimo " + i);
-            horaEmprestimo.setFont(new Font("Arial", Font.PLAIN, 12));
-            JLabel livro = new JLabel("Livro " + i);
-            livro.setFont(new Font("Arial", Font.PLAIN, 12));
-            JLabel dataDevolucao = new JLabel("Data de Devolução " + i);
-            dataDevolucao.setFont(new Font("Arial", Font.PLAIN, 12));
-
-            infoEmprestimos.add(idEmprestimo);
-            infoEmprestimos.add(usuario);
-            infoEmprestimos.add(dataEmprestimo);
-            infoEmprestimos.add(horaEmprestimo);
-            infoEmprestimos.add(dataDevolucao);
-            infoEmprestimos.add(new JLabel(""));
-            emprestimoPanel.add(infoEmprestimos, BorderLayout.CENTER);
-
-            JButton visualizarButton = new JButton("Visualizar");
-
-            visualizarButton.addActionListener(e -> new VisualizarEmprestimoView(idEmprestimo ,dataEmprestimo, horaEmprestimo, livro, usuario,dataDevolucao));
-            emprestimoPanel.add(visualizarButton, BorderLayout.EAST);
-
-            emprestimoList.add(emprestimoPanel);
-        }
-
-        JScrollPane scrollPane = new JScrollPane(emprestimoList);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
+        tabelaModelo = new DefaultTableModel(new Object[]{"ID", "Usuário", "Livro", "Data Empréstimo", "Data Devolução"}, 0);
+        tabelaEmprestimos = new JTable(tabelaModelo);
+        JScrollPane scrollPane = new JScrollPane(tabelaEmprestimos);
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    public void exibirEmprestimos(List<Emprestimo> emprestimos) {
+        tabelaModelo.setRowCount(0);
+        for (Emprestimo emprestimo : emprestimos) {
+            tabelaModelo.addRow(new Object[]{
+                    emprestimo.getId(),
+                    emprestimo.getUsuario(),
+                    emprestimo.getLivro(),
+                    emprestimo.getDataEmprestimo(),
+                    emprestimo.getDataDevolucao()
+            });
+        }
     }
 }

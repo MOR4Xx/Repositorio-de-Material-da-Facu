@@ -7,6 +7,13 @@ public class RenovacaoDevolucaoView extends JPanel {
     private JPanel cardPanel;
     private CardLayout cardLayout;
 
+    private JTextField renovarEmprestimoIdField;
+    private JTextField novaDataDevolucaoField;
+    private JButton renovarBtn;
+
+    private JTextField devolverEmprestimoIdField;
+    private JButton devolverBtn;
+
     public RenovacaoDevolucaoView() {
         setLayout(new BorderLayout());
 
@@ -38,19 +45,15 @@ public class RenovacaoDevolucaoView extends JPanel {
     public JPanel RenovarEmprestimoPanel() {
         JPanel panel = new JPanel(new GridLayout(20, 1, 10, 10));
         panel.add(new JLabel("ID do Empréstimo:"));
-        panel.add(new JTextField());
-        panel.add(new JLabel("Data Atual de Devolução:"));
-        panel.add(new JTextField());
-        panel.add(new JLabel("Nova Data de Devolução:"));
-        panel.add(new JTextField());
-        JButton renovarBtn = new JButton("Renovar");
-        panel.add(renovarBtn);
+        renovarEmprestimoIdField = new JTextField();
+        panel.add(renovarEmprestimoIdField);
 
-        // Aqui você pode adicionar a lógica de renovação de empréstimo
-        renovarBtn.addActionListener(e -> {
-            // Lógica de renovação
-            JOptionPane.showMessageDialog(this, "Empréstimo renovado com sucesso!");
-        });
+        panel.add(new JLabel("Nova Data de Devolução:"));
+        novaDataDevolucaoField = new JTextField();
+        panel.add(novaDataDevolucaoField);
+
+        renovarBtn = new JButton("Renovar");
+        panel.add(renovarBtn);
 
         return panel;
     }
@@ -58,16 +61,32 @@ public class RenovacaoDevolucaoView extends JPanel {
     public JPanel DevolverEmprestimoPanel() {
         JPanel panel = new JPanel(new GridLayout(20, 1, 10, 10));
         panel.add(new JLabel("ID do Empréstimo:"));
-        panel.add(new JTextField());
-        JButton devolverBtn = new JButton("Devolver");
+        devolverEmprestimoIdField = new JTextField();
+        panel.add(devolverEmprestimoIdField);
+
+        devolverBtn = new JButton("Devolver");
         panel.add(devolverBtn);
 
-        // Aqui você pode adicionar a lógica de devolução de empréstimo
-        devolverBtn.addActionListener(e -> {
-            // Lógica de devolução
-            JOptionPane.showMessageDialog(this, "Empréstimo devolvido com sucesso!");
-        });
-
         return panel;
+    }
+
+    public JTextField getRenovarEmprestimoIdField() {
+        return renovarEmprestimoIdField;
+    }
+
+    public JTextField getNovaDataDevolucaoField() {
+        return novaDataDevolucaoField;
+    }
+
+    public JButton getRenovarBtn() {
+        return renovarBtn;
+    }
+
+    public JTextField getDevolverEmprestimoIdField() {
+        return devolverEmprestimoIdField;
+    }
+
+    public JButton getDevolverBtn() {
+        return devolverBtn;
     }
 }

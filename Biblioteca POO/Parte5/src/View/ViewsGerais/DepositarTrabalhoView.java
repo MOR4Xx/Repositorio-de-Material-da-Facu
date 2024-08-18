@@ -2,8 +2,6 @@ package View.ViewsGerais;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class DepositarTrabalhoView extends JPanel {
 
@@ -60,46 +58,42 @@ public class DepositarTrabalhoView extends JPanel {
         add(depositarButton, BorderLayout.SOUTH);
 
         add(inputPanel, BorderLayout.CENTER);
-
-
-        depositarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String titulo = tituloField.getText();
-                String autor = autorField.getText();
-                String ano = anoField.getText();
-                String editora = editoraField.getText();
-
-                if (titulo.isEmpty() || autor.isEmpty() || ano.isEmpty() || editora.isEmpty()) {
-                    JOptionPane.showMessageDialog(DepositarTrabalhoView.this,
-                            "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    String resultado = processarDeposito(titulo, autor, ano, editora);
-
-                    mostrarResultado(resultado);
-                }
-            }
-        });
     }
 
-    private String processarDeposito(String titulo, String autor, String ano, String editora) {
-        return "Trabalho depositado com sucesso:\nTítulo: " + titulo + "\nAutor: " + autor + "\nAno: " + ano + "\nEditora: " + editora;
+    // Getters para acessar os componentes no controller
+    public JTextField getTituloField() {
+        return tituloField;
     }
 
-    private void mostrarResultado(String resultado) {
-        JFrame resultadoFrame = new JFrame("Resultado do Depósito");
-        resultadoFrame.setSize(400, 200);
-        resultadoFrame.setLayout(new BorderLayout());
+    public JTextField getAutorField() {
+        return autorField;
+    }
 
-        JTextArea resultadoTextArea = new JTextArea(resultado);
-        resultadoTextArea.setEditable(false);
-        resultadoTextArea.setLineWrap(true);
-        resultadoTextArea.setWrapStyleWord(true);
+    public JTextField getAnoField() {
+        return anoField;
+    }
 
-        JScrollPane scrollPane = new JScrollPane(resultadoTextArea);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    public JTextField getEditoraField() {
+        return editoraField;
+    }
 
-        resultadoFrame.add(scrollPane, BorderLayout.CENTER);
-        resultadoFrame.setVisible(true);
+    public JTextField getOrientadorField() {
+        return orientadorField;
+    }
+
+    public JTextField getCursoField() {
+        return cursoField;
+    }
+
+    public JTextField getPalavrasChaveField() {
+        return palavrasChaveField;
+    }
+
+    public JTextArea getResumoArea() {
+        return resumoArea;
+    }
+
+    public JButton getDepositarButton() {
+        return depositarButton;
     }
 }

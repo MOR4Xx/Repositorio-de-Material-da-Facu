@@ -14,6 +14,9 @@ public class Reserva {
         this.dataReserva = dataReserva;
     }
 
+    public Reserva() {
+    }
+
     public int getId() {
         return id;
     }
@@ -37,6 +40,7 @@ public class Reserva {
     public void setIdObra(int idObra) {
         this.idObra = idObra;
     }
+
 
     public LocalDate getDataReserva() {
         return dataReserva;

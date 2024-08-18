@@ -1,7 +1,4 @@
 package Models;
-import DAO.DAO;
-
-import java.io.*;
 
 public class Livro extends Obra {
 

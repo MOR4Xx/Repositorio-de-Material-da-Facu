@@ -8,15 +8,11 @@ import java.sql.SQLException;
 
 public class FaculdadeDAO {
 
-    private Connection connection;
-
-    public FaculdadeDAO(Connection connection) {
-        this.connection = connection;
-    }
+    private Conexao dao = new Conexao();
 
     public void adicionarFaculdade(Faculdade faculdade) throws SQLException {
         String sql = "INSERT INTO Faculdade (nome, estado, cidade) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = dao.getConnection().prepareStatement(sql)) {
             stmt.setString(1, faculdade.getNome());
             stmt.setString(2, faculdade.getEstado());
             stmt.setString(3, faculdade.getCidade());
@@ -26,7 +22,7 @@ public class FaculdadeDAO {
 
     public Faculdade buscarFaculdadePorId(long id) throws SQLException {
         String sql = "SELECT * FROM Faculdade WHERE cod = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = dao.getConnection().prepareStatement(sql)) {
             stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {

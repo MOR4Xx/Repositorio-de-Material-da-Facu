@@ -7,15 +7,11 @@ import java.util.List;
 
 public class LivroDAO {
 
-    private Connection connection;
-
-    public LivroDAO(Connection connection) {
-        this.connection = connection;
-    }
+    private static Conexao dao = new Conexao();
 
     public void adicionarLivro(Livro livro) throws SQLException {
         String sql = "INSERT INTO Livros (titulo, autores, area, editora, ano, edicao, num_folhas, emprestado, digital) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = dao.getConnection().prepareStatement(sql)) {
             stmt.setString(1, livro.getTitulo());
             stmt.setString(2, livro.getAutores());
             stmt.setString(3, livro.getArea());
@@ -31,7 +27,7 @@ public class LivroDAO {
 
     public void atualizarLivro(Livro livro) throws SQLException {
         String sql = "UPDATE Livros SET titulo = ?, autores = ?, area = ?, editora = ?, ano = ?, edicao = ?, num_folhas = ?, emprestado = ?, digital = ? WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = dao.getConnection().prepareStatement(sql)) {
             stmt.setString(1, livro.getTitulo());
             stmt.setString(2, livro.getAutores());
             stmt.setString(3, livro.getArea());
@@ -48,7 +44,7 @@ public class LivroDAO {
 
     public void deletarLivro(int id) throws SQLException {
         String sql = "DELETE FROM Livros WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = dao.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }
@@ -57,7 +53,7 @@ public class LivroDAO {
     public List<Livro> listarLivros() throws SQLException {
         List<Livro> livros = new ArrayList<>();
         String sql = "SELECT * FROM Livros";
-        try (Statement stmt = connection.createStatement();
+        try (Statement stmt = dao.getConnection().createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 Livro livro = new Livro(
@@ -80,7 +76,7 @@ public class LivroDAO {
 
     public int buscarLivroPorId(int id) throws SQLException {
         String sql = "SELECT * FROM Livros WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = dao.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -93,6 +89,30 @@ public class LivroDAO {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public Livro buscarLivroPorTitulo(String titulo) throws SQLException {
+        String sql = "SELECT * FROM Livros WHERE titulo LIKE ?";
+        try (PreparedStatement stmt = dao.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, "%" + titulo + "%");  // Usando LIKE para suportar pesquisas parciais
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Livro(
+                            rs.getInt("id"),
+                            rs.getString("titulo"),
+                            rs.getString("autores"),
+                            rs.getString("area"),
+                            rs.getString("editora"),
+                            rs.getInt("ano"),
+                            rs.getString("edicao"),
+                            rs.getInt("num_folhas"),
+                            rs.getBoolean("emprestado"),
+                            rs.getBoolean("digital")
+                    );
+                }
+            }
+        }
+        return null;
     }
 
 }

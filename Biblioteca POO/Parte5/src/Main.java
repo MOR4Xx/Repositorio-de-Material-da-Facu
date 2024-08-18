@@ -1,11 +1,11 @@
-import View.ViewsGerais.MenuPrincipalView;
+import Controllers.ControllerMenuPrincipal;
+import View.MenuPrincipalView;
 
 import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
         try {
-            // Percorre os estilos instalados e seleciona o Nimbus
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());
@@ -16,8 +16,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        // Criando a interface gráfica
-        SwingUtilities.invokeLater(() -> new MenuPrincipalView());
+        SwingUtilities.invokeLater(() -> new ControllerMenuPrincipal());
 
     }
 }

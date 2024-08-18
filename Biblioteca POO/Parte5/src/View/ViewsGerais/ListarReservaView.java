@@ -1,50 +1,41 @@
 package View.ViewsGerais;
 
+import Models.Reserva;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
 public class ListarReservaView extends JPanel {
+    private JTable tabelaReservas;
+    private DefaultTableModel tabelaModelo;
 
     public ListarReservaView() {
         setLayout(new BorderLayout());
 
-        JPanel reservaList = new JPanel();
-        reservaList.setLayout(new BoxLayout(reservaList, BoxLayout.Y_AXIS));
+        // Título da tela
+        JLabel titulo = new JLabel("Lista de Reservas", JLabel.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 24));
+        add(titulo, BorderLayout.NORTH);
 
-        for (int i = 0; i < 40; i++) {
-            JPanel reservaPanel = new JPanel();
-            reservaPanel.setLayout(new BorderLayout());
-            reservaPanel.setPreferredSize(new Dimension(300, 80));
-
-            JPanel infoReservas = new JPanel();
-            infoReservas.setLayout(new GridLayout(4, 1));
-            JLabel idReserva = new JLabel("ID: " + i);
-            idReserva.setFont(new Font("Arial", Font.BOLD, 11));
-            JLabel idUsuario = new JLabel("Nome do Usuario " + i);
-            idUsuario.setFont(new Font("Arial", Font.BOLD, 11));
-            JLabel idObra = new JLabel("Id Obra " + i);
-            idObra.setFont(new Font("Arial", Font.PLAIN, 12));
-            JLabel dataReserva = new JLabel("Data Reserva " + i);
-            dataReserva.setFont(new Font("Arial", Font.PLAIN, 12));
-
-            infoReservas.add(idReserva);
-            infoReservas.add(idUsuario);
-            infoReservas.add(idObra);
-            infoReservas.add(dataReserva);
-            reservaPanel.add(infoReservas, BorderLayout.CENTER);
-
-            JButton visualizarButton = new JButton("Visualizar");
-            visualizarButton.addActionListener(e -> new VisualizarReservaView(idReserva, idUsuario, idObra, dataReserva));
-            reservaPanel.add(visualizarButton, BorderLayout.EAST);
-
-            reservaList.add(reservaPanel);
-        }
-
-        JScrollPane scrollPane = new JScrollPane(reservaList);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
+        // Criação da tabela
+        tabelaModelo = new DefaultTableModel(new Object[]{"ID", "Usuário", "Livro", "Data Reserva"}, 0);
+        tabelaReservas = new JTable(tabelaModelo);
+        JScrollPane scrollPane = new JScrollPane(tabelaReservas);
         add(scrollPane, BorderLayout.CENTER);
     }
 
+    // Método para exibir as reservas na tabela
+    public void exibirReservas(List<Reserva> reservas) {
+        tabelaModelo.setRowCount(0); // Limpar a tabela
+        for (Reserva reserva : reservas) {
+            tabelaModelo.addRow(new Object[]{
+                    reserva.getId(),
+                    reserva.getIdUsuario(),
+                    reserva.getIdObra(),
+                    reserva.getDataReserva()
+            });
+        }
+    }
 }

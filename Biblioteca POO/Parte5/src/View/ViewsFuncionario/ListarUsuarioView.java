@@ -1,40 +1,55 @@
 package View.ViewsFuncionario;
 
-import View.ViewsGerais.VisualizarDetalheView;
+import Models.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class ListarUsuarioView extends JPanel {
+    private JPanel userList;
+    private JLabel idUsuario;
+    private JLabel nomeUsuario;
+    private JLabel idade;
+    private JLabel sexo;
+    private JLabel telefone;
+    private JLabel cpf;
 
     public ListarUsuarioView() {
         setLayout(new BorderLayout());
-        JPanel userList = new JPanel();
+        userList = new JPanel();
         userList.setLayout(new BoxLayout(userList, BoxLayout.Y_AXIS));
 
+        JScrollPane scrollPane = new JScrollPane(userList);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        for (int i = 0; i < 40; i++) {
-            JPanel usserPanel = new JPanel();
-            usserPanel.setLayout(new BorderLayout());
-            usserPanel.setPreferredSize(new Dimension(300, 80));
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    public void exibirUsuarios(List<Usuario> usuarios) {
+        userList.removeAll();
+
+        for (Usuario usuario : usuarios) {
+            JPanel userPanel = new JPanel();
+            userPanel.setLayout(new BorderLayout());
+            userPanel.setPreferredSize(new Dimension(300, 80));
 
             JPanel infoUsuario = new JPanel();
             infoUsuario.setLayout(new GridLayout(6, 1));
 
-            JLabel idUsuario = new JLabel("ID: " + i);
+            idUsuario = new JLabel("ID: " + usuario.getId());
             idUsuario.setFont(new Font("Arial", Font.BOLD, 11));
-            JLabel nomeUsuario = new JLabel("Nome Usuario " + i);
+            nomeUsuario = new JLabel("Nome: " + usuario.getNome());
             nomeUsuario.setFont(new Font("Arial", Font.BOLD, 11));
-            JLabel idade = new JLabel("Idade: " + i);
+            idade = new JLabel("Idade: " + usuario.getIdade());
             idade.setFont(new Font("Arial", Font.PLAIN, 11));
-            JLabel sexo = new JLabel("Sexo: " + i);
+            sexo = new JLabel("Sexo: " + usuario.getSexo());
             sexo.setFont(new Font("Arial", Font.PLAIN, 11));
-            JLabel telefone = new JLabel("Telefone " + i);
+            telefone = new JLabel("Telefone: " + usuario.getTelefone());
             telefone.setFont(new Font("Arial", Font.PLAIN, 11));
-            JLabel cpf = new JLabel("Cpf: "+i);
+            cpf = new JLabel("CPF: " + usuario.getCpf());
             cpf.setFont(new Font("Arial", Font.PLAIN, 11));
-            JLabel label = new JLabel();
-
 
             infoUsuario.add(nomeUsuario);
             infoUsuario.add(idUsuario);
@@ -42,16 +57,12 @@ public class ListarUsuarioView extends JPanel {
             infoUsuario.add(sexo);
             infoUsuario.add(telefone);
             infoUsuario.add(cpf);
-            infoUsuario.add(label);
-            usserPanel.add(infoUsuario, BorderLayout.CENTER);
-            userList.add(usserPanel);
+
+            userPanel.add(infoUsuario, BorderLayout.CENTER);
+            userList.add(userPanel);
         }
 
-        JScrollPane scrollPane = new JScrollPane(userList);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        add(scrollPane, BorderLayout.CENTER);
-
+        userList.revalidate();
+        userList.repaint();
     }
 }

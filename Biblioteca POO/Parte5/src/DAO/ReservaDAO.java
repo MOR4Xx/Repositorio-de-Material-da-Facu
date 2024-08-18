@@ -10,15 +10,11 @@ import java.util.List;
 
 public class ReservaDAO {
 
-    private Connection connection;
-
-    public ReservaDAO(Connection connection) {
-        this.connection = connection;
-    }
+    private Conexao dao = new Conexao();
 
     public void adicionarReserva(Reserva reserva) throws SQLException {
         String sql = "INSERT INTO Reservas (id_livro, id_usuario) VALUES (?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = dao.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, reserva.getId());
             stmt.setInt(2, reserva.getId());
             stmt.executeUpdate();
@@ -27,7 +23,7 @@ public class ReservaDAO {
 
     public void deletarReserva(int id) throws SQLException {
         String sql = "DELETE FROM Reservas WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = dao.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }
@@ -36,7 +32,7 @@ public class ReservaDAO {
     public List<Reserva> listarReservas() throws SQLException {
         List<Reserva> reservas = new ArrayList<>();
         String sql = "SELECT * FROM Reservas";
-        try (Statement stmt = connection.createStatement();
+        try (Statement stmt = dao.getConnection().createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 Reserva reserva = new Reserva(rs.getInt("id"),rs.getInt("id_livro"),

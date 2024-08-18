@@ -2,8 +2,6 @@ package View.ViewsGerais;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class BuscarObraView extends JPanel {
 
@@ -24,46 +22,30 @@ public class BuscarObraView extends JPanel {
 
         pesquisarButton = new JButton("Pesquisar");
         add(pesquisarButton, BorderLayout.SOUTH);
-
-        pesquisarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String pesquisa = pesquisaField.getText();
-                // Simular resultados de pesquisa
-                String[] resultados = buscarObra(pesquisa);
-
-                // Exibir resultados em uma nova janela
-                mostrarResultados(resultados);
-            }
-        });
     }
 
-    private String[] buscarObra(String pesquisa) {
-        // Aqui você implementaria a lógica de busca. Este é um exemplo simulado.
-        return new String[]{
-                "Obra 1: " + pesquisa,
-                "Obra 2: " + pesquisa,
-                "Obra 3: " + pesquisa
-        };
+    public JTextField getPesquisaField() {
+        return pesquisaField;
     }
 
-    private void mostrarResultados(String[] resultados) {
-        JFrame resultadosFrame = new JFrame("Resultados da Pesquisa");
-        resultadosFrame.setSize(400, 300);
-        resultadosFrame.setLayout(new BorderLayout());
+    public JButton getPesquisarButton() {
+        return pesquisarButton;
+    }
 
-        JPanel resultadosPanel = new JPanel();
-        resultadosPanel.setLayout(new BoxLayout(resultadosPanel, BoxLayout.Y_AXIS));
+    public void mostrarResultado(String resultado) {
+        JFrame resultadoFrame = new JFrame("Resultado da Pesquisa");
+        resultadoFrame.setSize(400, 200);
+        resultadoFrame.setLayout(new BorderLayout());
 
-        for (String resultado : resultados) {
-            JLabel resultadoLabel = new JLabel(resultado);
-            resultadosPanel.add(resultadoLabel);
-        }
+        JTextArea resultadoTextArea = new JTextArea(resultado);
+        resultadoTextArea.setEditable(false);
+        resultadoTextArea.setLineWrap(true);
+        resultadoTextArea.setWrapStyleWord(true);
 
-        JScrollPane scrollPane = new JScrollPane(resultadosPanel);
+        JScrollPane scrollPane = new JScrollPane(resultadoTextArea);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        resultadosFrame.add(scrollPane, BorderLayout.CENTER);
-        resultadosFrame.setVisible(true);
+        resultadoFrame.add(scrollPane, BorderLayout.CENTER);
+        resultadoFrame.setVisible(true);
     }
 }

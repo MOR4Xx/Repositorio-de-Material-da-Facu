@@ -7,6 +7,16 @@ public class CadVisuEditExcluiView extends JPanel {
     private JPanel cardPanel;
     private CardLayout cardLayout;
 
+    private JButton cadastrarLivroBtn;
+    private JButton visualizarLivrosBtn;
+    private JButton editarLivroBtn;
+    private JButton excluirLivroBtn;
+
+    private JButton cadastrarUsuarioBtn;
+    private JButton visualizarUsuariosBtn;
+    private JButton editarUsuarioBtn;
+    private JButton excluirUsuarioBtn;
+
     public CadVisuEditExcluiView() {
         setLayout(new BorderLayout());
 
@@ -15,15 +25,15 @@ public class CadVisuEditExcluiView extends JPanel {
 
         JPanel buttonsPanel = new JPanel(new GridLayout(2, 4));
 
-        JButton cadastrarLivroBtn = new JButton("Cadastrar Livro");
-        JButton visualizarLivrosBtn = new JButton("Visualizar Livros");
-        JButton editarLivroBtn = new JButton("Editar Livro");
-        JButton excluirLivroBtn = new JButton("Excluir Livro");
+        cadastrarLivroBtn = new JButton("Cadastrar Livro");
+        visualizarLivrosBtn = new JButton("Visualizar Livros");
+        editarLivroBtn = new JButton("Editar Livro");
+        excluirLivroBtn = new JButton("Excluir Livro");
 
-        JButton cadastrarUsuarioBtn = new JButton("Cadastrar Usuário");
-        JButton visualizarUsuariosBtn = new JButton("Visualizar Usuários");
-        JButton editarUsuarioBtn = new JButton("Editar Usuário");
-        JButton excluirUsuarioBtn = new JButton("Excluir Usuário");
+        cadastrarUsuarioBtn = new JButton("Cadastrar Usuário");
+        visualizarUsuariosBtn = new JButton("Visualizar Usuários");
+        editarUsuarioBtn = new JButton("Editar Usuário");
+        excluirUsuarioBtn = new JButton("Excluir Usuário");
 
         buttonsPanel.add(cadastrarLivroBtn);
         buttonsPanel.add(visualizarLivrosBtn);
@@ -191,5 +201,45 @@ public class CadVisuEditExcluiView extends JPanel {
         JButton excluirBtn = new JButton("Excluir");
         panel.add(excluirBtn);
         return panel;
+    }
+
+    public JPanel getCardPanel() {
+        return cardPanel;
+    }
+
+    public CardLayout getCardLayout() {
+        return cardLayout;
+    }
+
+    public JButton getCadastrarLivroBtn() {
+        return cadastrarLivroBtn;
+    }
+
+    public JButton getVisualizarLivrosBtn() {
+        return visualizarLivrosBtn;
+    }
+
+    public JButton getEditarLivroBtn() {
+        return editarLivroBtn;
+    }
+
+    public JButton getExcluirLivroBtn() {
+        return excluirLivroBtn;
+    }
+
+    public JButton getCadastrarUsuarioBtn() {
+        return cadastrarUsuarioBtn;
+    }
+
+    public JButton getVisualizarUsuariosBtn() {
+        return visualizarUsuariosBtn;
+    }
+
+    public JButton getEditarUsuarioBtn() {
+        return editarUsuarioBtn;
+    }
+
+    public JButton getExcluirUsuarioBtn() {
+        return excluirUsuarioBtn;
     }
 }
