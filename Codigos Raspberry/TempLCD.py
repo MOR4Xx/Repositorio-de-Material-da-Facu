@@ -83,7 +83,7 @@ def read_and_display():
             
             print(f'Temp = {temperature:.1f} C')
             print(f'Hum = {humidity:.1f} %')
-            print(f'Soil = {solo:.1f} %') 
+            print(f'Solo = {solo:.1f} %') 
             
         except Exception as e:
             print(f"Error reading sensor: {e}")
