@@ -1,4 +1,3 @@
-
 import paho.mqtt.client as mqtt
 from RPLCD.i2c import CharLCD 
 import time
@@ -34,7 +33,7 @@ client = mqtt.Client()
 # Função de callback quando o cliente se conecta ao broker MQTT
 def on_connect(client, userdata, flags, rc):
     print("Conectado ao broker MQTT com código de retorno: " + str(rc))
-    client.subscribe("raspberry/relay")  # Inscreva-se no tópico para comandos do relé
+    client.subscribe("raspberry/relay")  # Inscreve-se no tópico para comandos do relé
 
 # Função de callback para quando uma mensagem for recebida
 def on_message(client, userdata, msg):
@@ -51,32 +50,31 @@ def on_message(client, userdata, msg):
 # Configurações do MQTT
 client.on_connect = on_connect
 client.on_message = on_message
-client.connect("localhost", 1883, 60)  # Conecte-se ao broker MQTT no localhost
+client.connect("localhost", 1883, 60)  # Conecta-se ao broker MQTT no localhost
 
 # Função para ler e mostrar as informações no LCD, e publicar no MQTT
 def read_and_display():
     while True:
-        for _ in range(5):  # Tenta até 5 vezes
+        try:
+            # Tenta ler os dados do sensor DHT11
+            for _ in range(5):  # Tenta até 5 vezes
                 try:
                     print("Lendo os dados do Sensores")
-                    #Lendo valores sensor DHT11
                     humidity = dhtDevice.humidity
                     temperature = dhtDevice.temperature
-                    
-                    #Lendo valores sensor de umidade do solo
                     voltagem = chan.voltage
                     
                     if temperature is not None and humidity is not None:
-                        break  # Sair do loop se a leitura for bem-sucedida
-                    time.sleep(2)  # Esperar 2 segundos antes de tentar novamente
+                        break  # Sai do loop se a leitura for bem-sucedida
+                    time.sleep(2)  # Espera 2 segundos antes de tentar novamente
                 except RuntimeError as e:
                     print(f"Lendo novamente o sensor: {e}")
-                else:
-                # Se não obter leituras válidas após 5 tentativas, exibir erro
-                print("Failed to get valid reading from DHT11 sensor")
-                continue  # Pular para a próxima iteração do loop principal
+            else:
+                # Se não obter leituras válidas após 5 tentativas, exibe erro
+                print("Falha ao obter leitura válida do sensor DHT11")
+                continue  # Pula para a próxima iteração do loop principal
 
-            #informando os dados
+            # Exibindo os dados no LCD
             lcd.clear()
             lcd.write_string(f'Temp = {temperature:.1f} C')
             lcd.crlf()
@@ -87,21 +85,23 @@ def read_and_display():
             MAX_VOLTAGE = 4.094
             MIN_VOLTAGE = 2.000
             solo = ((MAX_VOLTAGE - voltagem) / (MAX_VOLTAGE - MIN_VOLTAGE)) * 100
-            
             lcd.write_string(f'Soil = {solo:.1f} %')
+
+            # Controle do relé com base na leitura de solo
             control_relay(solo)
             
+            # Exibindo os valores no console
             print(f'Temp = {temperature:.1f} C')
             print(f'Hum = {humidity:.1f} %')
             print(f'Solo = {solo:.1f} %')
             
-            # Publicar dados no tópico MQTT
+            # Publica os dados no MQTT
             client.publish("raspberry/sensors/temperature", f"{temperature}")
             client.publish("raspberry/sensors/humidity", f"{humidity}")
             client.publish("raspberry/sensors/soil", f"{solo}")
-            
+
         except RuntimeError as e:
-            print("Erro ao ler sensor: ", e)
+            print("Erro ao ler o sensor: ", e)
         
         time.sleep(10)  # Espera antes da próxima leitura
 
