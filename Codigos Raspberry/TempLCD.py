@@ -1,3 +1,4 @@
+
 import paho.mqtt.client as mqtt
 from RPLCD.i2c import CharLCD 
 import time
@@ -55,31 +56,49 @@ client.connect("localhost", 1883, 60)  # Conecte-se ao broker MQTT no localhost
 # Função para ler e mostrar as informações no LCD, e publicar no MQTT
 def read_and_display():
     while True:
-        try:
-            # Lendo dados do DHT11 e sensor de solo
-            humidity = dhtDevice.humidity
-            temperature = dhtDevice.temperature
-            voltagem = chan.voltage
-            
-            # Publicar dados no tópico MQTT
-            client.publish("raspberry/sensors", f"Temperatura: {temperature} C, Umidade: {humidity} %, Solo: {voltagem} V")
-            
-            # Exibir dados no LCD
+        for _ in range(5):  # Tenta até 5 vezes
+                try:
+                    print("Lendo os dados do Sensores")
+                    #Lendo valores sensor DHT11
+                    humidity = dhtDevice.humidity
+                    temperature = dhtDevice.temperature
+                    
+                    #Lendo valores sensor de umidade do solo
+                    voltagem = chan.voltage
+                    
+                    if temperature is not None and humidity is not None:
+                        break  # Sair do loop se a leitura for bem-sucedida
+                    time.sleep(2)  # Esperar 2 segundos antes de tentar novamente
+                except RuntimeError as e:
+                    print(f"Lendo novamente o sensor: {e}")
+                else:
+                # Se não obter leituras válidas após 5 tentativas, exibir erro
+                print("Failed to get valid reading from DHT11 sensor")
+                continue  # Pular para a próxima iteração do loop principal
+
+            #informando os dados
             lcd.clear()
             lcd.write_string(f'Temp = {temperature:.1f} C')
             lcd.crlf()
             lcd.write_string(f'Hum = {humidity:.1f} %')
             time.sleep(5)
-
+            
             lcd.clear()
             MAX_VOLTAGE = 4.094
             MIN_VOLTAGE = 2.000
             solo = ((MAX_VOLTAGE - voltagem) / (MAX_VOLTAGE - MIN_VOLTAGE)) * 100
-            lcd.write_string(f'Solo = {solo:.1f} %')
-
-            # Controle do relé
+            
+            lcd.write_string(f'Soil = {solo:.1f} %')
             control_relay(solo)
-            print(f'Temp = {temperature:.1f} C, Hum = {humidity:.1f} %, Solo = {solo:.1f} %')
+            
+            print(f'Temp = {temperature:.1f} C')
+            print(f'Hum = {humidity:.1f} %')
+            print(f'Solo = {solo:.1f} %')
+            
+            # Publicar dados no tópico MQTT
+            client.publish("raspberry/sensors/temperature", f"{temperature}")
+            client.publish("raspberry/sensors/humidity", f"{humidity}")
+            client.publish("raspberry/sensors/soil", f"{solo}")
             
         except RuntimeError as e:
             print("Erro ao ler sensor: ", e)
