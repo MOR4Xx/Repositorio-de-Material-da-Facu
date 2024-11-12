@@ -1,3 +1,4 @@
+
 import paho.mqtt.client as mqtt
 from RPLCD.i2c import CharLCD
 import time
@@ -101,6 +102,8 @@ def predefinido():
     control_relay("true")
     time.sleep(quantidade_agua_predefinida)  # Tempo de irrigação simulando a quantidade de água
     control_relay("false")
+    print("Irrigaçao predefinida feita")
+    
 
 
 # -------------------- Funções MQTT --------------------
@@ -124,7 +127,7 @@ def on_message(client, userdata, msg):
         control_relay(message)
     elif topic == "raspberry/modo":
         definir_modo(message)
-    elif topic == "raspberry/predefinido":
+    elif topic == "raspberry/quantidade_agua":
         # Atualiza a quantidade de água no modo predefinido
         quantidade_agua_predefinida = int(message)
         print(f"Quantidade de água predefinida atualizada para: {quantidade_agua_predefinida} segundos")
