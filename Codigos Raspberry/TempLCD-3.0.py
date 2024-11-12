@@ -1,4 +1,3 @@
-
 import paho.mqtt.client as mqtt
 from RPLCD.i2c import CharLCD
 import time
@@ -33,9 +32,11 @@ chan = AnalogIn(ads, ADS.P0)
 # Configuração do cliente MQTT
 client = mqtt.Client()
 
-# Variável para armazenar o modo de irrigação e quantidade de água no modo predefinido
+# Variáveis de modo e quantidade de água
 modo = "Manual"
 quantidade_agua_predefinida = 0
+cooldown_predefinido = 30  # Cooldown em segundos após irrigação no modo Predefinida
+nivel_umidade_solo_minimo = 50  # Umidade mínima para ativar a irrigação
 
 # -------------------- Funções de Sensor --------------------
 
@@ -88,22 +89,36 @@ def definir_modo(command):
 
 
 def automatic():
-    """Verifica a umidade do solo e ativa/desativa o relé automaticamente."""
+    """Verifica a umidade do solo e ativa o relé automaticamente se necessário."""
     soil = read_soil()
-    if soil >= 50:
+    if soil < nivel_umidade_solo_minimo:
+        print("Umidade do solo baixa. Iniciando irrigação automática.")
         control_relay("true")
     else:
         control_relay("false")
 
 
 def predefinido():
-    """Ativa o relé com base na quantidade de água predefinida."""
-    print(f"Irrigando com quantidade predefinida: {quantidade_agua_predefinida}")
-    control_relay("true")
-    time.sleep(quantidade_agua_predefinida)  # Tempo de irrigação simulando a quantidade de água
-    control_relay("false")
-    print("Irrigaçao predefinida feita")
-    
+    """Irriga se a umidade do solo estiver baixa e ativa o cooldown após a irrigação."""
+    soil = read_soil()
+    if soil < nivel_umidade_solo_minimo:
+        print(f"Irrigando com quantidade predefinida: {quantidade_agua_predefinida} segundos.")
+        control_relay("true")
+        time.sleep(quantidade_agua_predefinida)  # Tempo de irrigação com base na quantidade predefinida
+        control_relay("false")
+        print("Irrigação predefinida concluída.")
+        time.sleep(cooldown_predefinido)  # Cooldown após irrigação
+
+
+def manual():
+    """Executa a irrigação manualmente com a quantidade de água definida."""
+    if quantidade_agua_predefinida > 0:
+        print(f"Irrigação manual por {quantidade_agua_predefinida} segundos.")
+        control_relay("true")
+        time.sleep(quantidade_agua_predefinida)
+        control_relay("false")
+    else:
+        print("Quantidade de água para irrigação manual não definida.")
 
 
 # -------------------- Funções MQTT --------------------
@@ -130,7 +145,7 @@ def on_message(client, userdata, msg):
     elif topic == "raspberry/quantidade_agua":
         # Atualiza a quantidade de água no modo predefinido
         quantidade_agua_predefinida = int(message)
-        print(f"Quantidade de água predefinida atualizada para: {quantidade_agua_predefinida} segundos")
+        print(f"Quantidade de água atualizada para: {quantidade_agua_predefinida} segundos")
 
 
 # -------------------- Monitoramento de Modo --------------------
@@ -141,9 +156,10 @@ def monitorar_modo():
         if modo == "Automatica":
             automatic()
         elif modo == "Predefinida":
-            if quantidade_agua_predefinida > 0:
-                predefinido()
-        time.sleep(5)  # Intervalo entre as verificações
+            predefinido()
+        elif modo == "Manual":
+            manual()
+        time.sleep(10)  # Intervalo entre as verificações
 
 
 # -------------------- Funções de Exibição e Publicação --------------------
