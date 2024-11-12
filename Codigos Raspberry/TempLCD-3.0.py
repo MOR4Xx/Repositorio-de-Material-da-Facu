@@ -26,7 +26,8 @@ dhtDevice = adafruit_dht.DHT11(board.D17, use_pulseio=False)
 
 # Inicializando o módulo de Digital/Analógico
 i2c = busio.I2C(board.SCL, board.SDA)
-sensor_soil = AnalogIn(ads=ADS.ADS1015(i2c), ADS.P0)
+ads=ADS.ADS1015(i2c)
+chan = AnalogIn(ads, ADS.P0)
 
 # Configuração do cliente MQTT
 client = mqtt.Client()
@@ -35,7 +36,7 @@ client = mqtt.Client()
 
 def read_soil():
     """Lê a tensão do sensor de umidade do solo."""
-    return sensor_soil.voltage
+    return chan.voltage
 
 def read_temp():
     """Tenta ler a temperatura do DHT11. Retorna None se falhar após 5 tentativas."""
@@ -61,10 +62,10 @@ def read_humidity():
 
 def control_relay(command):
     """Controla o estado do relé (ligar ou desligar) com base no comando recebido."""
-    if command == "ligar":
+    if command == "true":
         GPIO.output(pino_rele, GPIO.HIGH)
         print("Relé ligado")
-    elif command == "desligar":
+    elif command == "false":
         GPIO.output(pino_rele, GPIO.LOW)
         print("Relé desligado")
     else:
@@ -85,9 +86,9 @@ def automatic():
     """Ativa o relé automaticamente com base na umidade do solo."""
     soil = read_soil()
     if soil >= 50:
-        control_relay("ligar")
+        control_relay("true")
     else:
-        control_relay("desligar")
+        control_relay("false")
 
 # -------------------- Funções MQTT --------------------
 
@@ -95,7 +96,7 @@ def on_connect(client, userdata, flags, rc):
     """Callback para quando o cliente se conecta ao broker MQTT."""
     print("Conectado ao broker MQTT com código de retorno: " + str(rc))
     client.subscribe("raspberry/relay")
-    client.publish("raspberry/modo")
+    client.subscribe("raspberry/modo")
 
 def on_message(client, userdata, msg):
     """Callback para quando uma mensagem é recebida pelo MQTT."""
