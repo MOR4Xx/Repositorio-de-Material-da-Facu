@@ -35,8 +35,10 @@ client = mqtt.Client()
 # Variáveis de modo e quantidade de água
 modo = "Manual"
 quantidade_agua_predefinida = 0
-cooldown_predefinido = 30  # Cooldown em segundos após irrigação no modo Predefinida
+quantidade_agua_manual = 0
+cooldown_predefinido = 10  # Cooldown em segundos após irrigação no modo Predefinida
 nivel_umidade_solo_minimo = 50  # Umidade mínima para ativar a irrigação
+
 
 # -------------------- Funções de Sensor --------------------
 
@@ -112,11 +114,13 @@ def predefinido():
 
 def manual():
     """Executa a irrigação manualmente com a quantidade de água definida."""
-    if quantidade_agua_predefinida > 0:
-        print(f"Irrigação manual por {quantidade_agua_predefinida} segundos.")
+    time.sleep(5)
+    if quantidade_agua_manual> 0:
+        print(f"Irrigação manual por {quantidade_agua_manual} segundos.")
         control_relay("true")
-        time.sleep(quantidade_agua_predefinida)
+        time.sleep(quantidade_agua_manual)
         control_relay("false")
+        
     else:
         print("Quantidade de água para irrigação manual não definida.")
 
@@ -129,26 +133,28 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("raspberry/relay")
     client.subscribe("raspberry/modo")
     client.subscribe("raspberry/quantidade_agua")
+    client.subscribe("raspberry/quantidade_agua_manual")
 
 
 def on_message(client, userdata, msg):
     """Callback para quando uma mensagem é recebida pelo MQTT."""
     global quantidade_agua_predefinida
+    global quantidade_agua_manual
     topic = msg.topic
     message = msg.payload.decode()
-    print("Mensagem recebida: " + message)
+    print("Topic:"+ topic + "Mensagem recebida: " + message)
 
     if topic == "raspberry/relay":
-        if message == "true" and modo == "Manual":
-            manual()
-        else:
-            control_relay(message)  # Apenas controla o relé diretamente
+        control_relay(message)
     elif topic == "raspberry/modo":
         definir_modo(message)
     elif topic == "raspberry/quantidade_agua":
         # Atualiza a quantidade de água no modo predefinido
         quantidade_agua_predefinida = int(message)
         print(f"Quantidade de água atualizada para: {quantidade_agua_predefinida} segundos")
+    elif topic == "raspberry/quantidade_agua_manual":
+        quantidade_agua_manual = message
+        print("Quantidade de agua manual mudada: "+ quantidade_agua_manual)
 
 
 # -------------------- Monitoramento de Modo --------------------
@@ -160,6 +166,8 @@ def monitorar_modo():
             automatic()
         elif modo == "Predefinida":
             predefinido()
+        elif modo == "Manual":
+            manual()
         time.sleep(10)  # Intervalo entre as verificações
 
 
