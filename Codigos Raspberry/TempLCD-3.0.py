@@ -139,7 +139,10 @@ def on_message(client, userdata, msg):
     print("Mensagem recebida: " + message)
 
     if topic == "raspberry/relay":
-        control_relay(message)
+        if message == "true" and modo == "Manual":
+            manual()
+        else:
+            control_relay(message)  # Apenas controla o relé diretamente
     elif topic == "raspberry/modo":
         definir_modo(message)
     elif topic == "raspberry/quantidade_agua":
@@ -157,8 +160,6 @@ def monitorar_modo():
             automatic()
         elif modo == "Predefinida":
             predefinido()
-        elif modo == "Manual":
-            manual()
         time.sleep(10)  # Intervalo entre as verificações
 
 
