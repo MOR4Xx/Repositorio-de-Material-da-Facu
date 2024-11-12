@@ -114,13 +114,13 @@ def predefinido():
 
 def manual():
     """Executa a irrigação manualmente com a quantidade de água definida."""
-    time.sleep(5)
-    if quantidade_agua_manual> 0:
+    print("Iniciando irrigação manualmente.")
+    if quantidade_agua_manual > 0:
         print(f"Irrigação manual por {quantidade_agua_manual} segundos.")
         control_relay("true")
         time.sleep(quantidade_agua_manual)
         control_relay("false")
-        
+
     else:
         print("Quantidade de água para irrigação manual não definida.")
 
@@ -142,10 +142,10 @@ def on_message(client, userdata, msg):
     global quantidade_agua_manual
     topic = msg.topic
     message = msg.payload.decode()
-    print("Topic:"+ topic + "Mensagem recebida: " + message)
+    print("Topic:" + topic + "Mensagem recebida: " + message)
 
     if topic == "raspberry/relay":
-        control_relay(message)
+        manual()
     elif topic == "raspberry/modo":
         definir_modo(message)
     elif topic == "raspberry/quantidade_agua":
@@ -154,7 +154,7 @@ def on_message(client, userdata, msg):
         print(f"Quantidade de água atualizada para: {quantidade_agua_predefinida} segundos")
     elif topic == "raspberry/quantidade_agua_manual":
         quantidade_agua_manual = message
-        print("Quantidade de agua manual mudada: "+ quantidade_agua_manual)
+        print("Quantidade de agua manual mudada: " + quantidade_agua_manual)
 
 
 # -------------------- Monitoramento de Modo --------------------
@@ -166,8 +166,6 @@ def monitorar_modo():
             automatic()
         elif modo == "Predefinida":
             predefinido()
-        elif modo == "Manual":
-            manual()
         time.sleep(10)  # Intervalo entre as verificações
 
 
