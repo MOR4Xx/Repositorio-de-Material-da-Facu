@@ -26,17 +26,22 @@ dhtDevice = adafruit_dht.DHT11(board.D17, use_pulseio=False)
 
 # Inicializando o módulo de Digital/Analógico
 i2c = busio.I2C(board.SCL, board.SDA)
-ads=ADS.ADS1015(i2c)
+ads = ADS.ADS1015(i2c)
 chan = AnalogIn(ads, ADS.P0)
 
 # Configuração do cliente MQTT
 client = mqtt.Client()
+
+# Variável para armazenar o modo de irrigação e quantidade de água no modo predefinido
+modo = "Manual"
+quantidade_agua_predefinida = 0
 
 # -------------------- Funções de Sensor --------------------
 
 def read_soil():
     """Lê a tensão do sensor de umidade do solo."""
     return chan.voltage
+
 
 def read_temp():
     """Tenta ler a temperatura do DHT11. Retorna None se falhar após 5 tentativas."""
@@ -48,6 +53,7 @@ def read_temp():
             time.sleep(2)
     return None
 
+
 def read_humidity():
     """Tenta ler a umidade do DHT11. Retorna None se falhar após 5 tentativas."""
     for _ in range(5):
@@ -57,6 +63,7 @@ def read_humidity():
             print(f"Erro ao ler umidade do DHT11: {e}")
             time.sleep(2)
     return None
+
 
 # -------------------- Controles --------------------
 
@@ -71,24 +78,30 @@ def control_relay(command):
     else:
         print("Comando de relé desconhecido")
 
+
 def definir_modo(command):
     """Define o modo de irrigação com base no comando recebido."""
-    if command == "Automatica":
-        print("Modo de irrigação automática")
-        automatic()
-    elif command == "Manual":
-        print("Modo de irrigação manual")
-        control_relay("desligar")
-    elif command == "Predefinida":
-        print("Modo de irrigação predefinida")
+    global modo
+    modo = command
+    print(f"Modo de irrigação definido para {modo}")
+
 
 def automatic():
-    """Ativa o relé automaticamente com base na umidade do solo."""
+    """Verifica a umidade do solo e ativa/desativa o relé automaticamente."""
     soil = read_soil()
     if soil >= 50:
         control_relay("true")
     else:
         control_relay("false")
+
+
+def predefinido():
+    """Ativa o relé com base na quantidade de água predefinida."""
+    print(f"Irrigando com quantidade predefinida: {quantidade_agua_predefinida}")
+    control_relay("true")
+    time.sleep(quantidade_agua_predefinida)  # Tempo de irrigação simulando a quantidade de água
+    control_relay("false")
+
 
 # -------------------- Funções MQTT --------------------
 
@@ -97,9 +110,12 @@ def on_connect(client, userdata, flags, rc):
     print("Conectado ao broker MQTT com código de retorno: " + str(rc))
     client.subscribe("raspberry/relay")
     client.subscribe("raspberry/modo")
+    client.subscribe("raspberry/quantidade_agua")
+
 
 def on_message(client, userdata, msg):
     """Callback para quando uma mensagem é recebida pelo MQTT."""
+    global quantidade_agua_predefinida
     topic = msg.topic
     message = msg.payload.decode()
     print("Mensagem recebida: " + message)
@@ -108,6 +124,24 @@ def on_message(client, userdata, msg):
         control_relay(message)
     elif topic == "raspberry/modo":
         definir_modo(message)
+    elif topic == "raspberry/predefinido":
+        # Atualiza a quantidade de água no modo predefinido
+        quantidade_agua_predefinida = int(message)
+        print(f"Quantidade de água predefinida atualizada para: {quantidade_agua_predefinida} segundos")
+
+
+# -------------------- Monitoramento de Modo --------------------
+
+def monitorar_modo():
+    """Verifica o modo de operação e executa as funções de irrigação apropriadas."""
+    while True:
+        if modo == "Automatica":
+            automatic()
+        elif modo == "Predefinida":
+            if quantidade_agua_predefinida > 0:
+                predefinido()
+        time.sleep(5)  # Intervalo entre as verificações
+
 
 # -------------------- Funções de Exibição e Publicação --------------------
 
@@ -153,11 +187,14 @@ def read_and_display():
 
         time.sleep(10)  # Espera antes da próxima leitura
 
+
 # -------------------- Execução do Programa --------------------
 
-# Executa as funções em threads
+# Inicia as threads
 sensor_thread = threading.Thread(target=read_and_display)
+monitor_thread = threading.Thread(target=monitorar_modo)
 sensor_thread.start()
+monitor_thread.start()
 
 # Configurações do MQTT
 client.on_connect = on_connect
