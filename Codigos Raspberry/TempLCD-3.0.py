@@ -35,10 +35,8 @@ client = mqtt.Client()
 # Variáveis de modo e quantidade de água
 modo = "Manual"
 quantidade_agua_predefinida = 0
-quantidade_agua_manual = 0  # Certifique-se de que esta variável é um inteiro
-cooldown_predefinido = 10  # Cooldown em segundos após irrigação no modo Predefinida
+cooldown_predefinido = 30  # Cooldown em segundos após irrigação no modo Predefinida
 nivel_umidade_solo_minimo = 50  # Umidade mínima para ativar a irrigação
-irrigacao_ativa = False  # Estado da irrigação para evitar ativações não solicitadas
 
 # -------------------- Funções de Sensor --------------------
 
@@ -73,94 +71,85 @@ def read_humidity():
 
 def control_relay(command):
     """Controla o estado do relé (ligar ou desligar) com base no comando recebido."""
-    global irrigacao_ativa
-    if command == "true":
+    if command == "ON" or command == "true":
         GPIO.output(pino_rele, GPIO.HIGH)
-        irrigacao_ativa = True
-        print("\nRelé ligado\n")
-    elif command == "false":
+        print("Relé ligado")
+    elif command == "OFF" or command == "false":
         GPIO.output(pino_rele, GPIO.LOW)
-        irrigacao_ativa = False
-        print("\nRelé desligado\n")
+        print("Relé desligado")
     else:
-        print("\nComando de relé desconhecido\n")
+        print("Comando de relé desconhecido")
 
 
 def definir_modo(command):
     """Define o modo de irrigação com base no comando recebido."""
     global modo
     modo = command
-    print(f"\nModo de irrigação definido para {modo}\n")
+    print(f"Modo de irrigação definido para {modo}")
 
 
 def automatic():
     """Verifica a umidade do solo e ativa o relé automaticamente se necessário."""
     soil = read_soil()
-    if not irrigacao_ativa and soil < nivel_umidade_solo_minimo:
+    if soil < nivel_umidade_solo_minimo:
         print("Umidade do solo baixa. Iniciando irrigação automática.")
         control_relay("true")
-    elif irrigacao_ativa and soil >= nivel_umidade_solo_minimo:
-        print("Umidade do solo adequada. Parando irrigação automática.")
+    else:
         control_relay("false")
 
 
 def predefinido():
     """Irriga se a umidade do solo estiver baixa e ativa o cooldown após a irrigação."""
-    global irrigacao_ativa
     soil = read_soil()
-    if not irrigacao_ativa and soil < nivel_umidade_solo_minimo:
-        print(f"Iniciando irrigação predefinida por {quantidade_agua_predefinida} segundos.")
+    if soil < nivel_umidade_solo_minimo:
+        print(f"Irrigando com quantidade predefinida: {quantidade_agua_predefinida} segundos.")
         control_relay("true")
-        time.sleep(quantidade_agua_predefinida)
+        time.sleep(quantidade_agua_predefinida)  # Tempo de irrigação com base na quantidade predefinida
         control_relay("false")
         print("Irrigação predefinida concluída.")
-        irrigacao_ativa = False
-        time.sleep(cooldown_predefinido)
+        time.sleep(cooldown_predefinido)  # Cooldown após irrigação
+
 
 
 def manual():
     """Executa a irrigação manualmente com a quantidade de água definida."""
-    global irrigacao_ativa
-    if quantidade_agua_manual > 0 and not irrigacao_ativa:
-        print(f"Iniciando irrigação manual por {quantidade_agua_manual} segundos.")
+    if quantidade_agua_predefinida > 0:
+        print(f"Irrigação manual por {quantidade_agua_predefinida} segundos.")
         control_relay("true")
-        time.sleep(quantidade_agua_manual)
+        time.sleep(quantidade_agua_predefinida)
+        client.publish("raspberry/info/button", "OFF")
         control_relay("false")
-        irrigacao_ativa = False
+        quantidade_agua_predefinida = 0
+    
     else:
-        print("Quantidade de água para irrigação manual não definida ou irrigação já ativa.")
+        print("Quantidade de água para irrigação manual não definida.")
 
 
 # -------------------- Funções MQTT --------------------
 
 def on_connect(client, userdata, flags, rc):
     """Callback para quando o cliente se conecta ao broker MQTT."""
-    print(f"\nConectado ao broker MQTT com código de retorno: {rc}\n")
+    print("Conectado ao broker MQTT com código de retorno: " + str(rc))
     client.subscribe("raspberry/relay")
     client.subscribe("raspberry/modo")
     client.subscribe("raspberry/quantidade_agua")
-    client.subscribe("raspberry/quantidade_agua_manual")
 
 
 def on_message(client, userdata, msg):
     """Callback para quando uma mensagem é recebida pelo MQTT."""
     global quantidade_agua_predefinida
-    global quantidade_agua_manual
     topic = msg.topic
     message = msg.payload.decode()
-    print(f"\nTópico: {topic} - Mensagem recebida: {message}\n")
+    print("Mensagem recebida: " + message)
 
     if topic == "raspberry/relay":
-        if message == "true" and modo == "Manual":
-            manual()
+        control_relay(message)
     elif topic == "raspberry/modo":
         definir_modo(message)
     elif topic == "raspberry/quantidade_agua":
+        # Atualiza a quantidade de água no modo predefinido
         quantidade_agua_predefinida = int(message)
-        print(f"Quantidade de água predefinida atualizada para: {quantidade_agua_predefinida} segundos\n")
-    elif topic == "raspberry/quantidade_agua_manual":
-        quantidade_agua_manual = int(message)  # Converte para inteiro para evitar problemas
-        print(f"Quantidade de água manual atualizada para: {quantidade_agua_manual} segundos\n")
+        print(f"Quantidade de água atualizada para: {quantidade_agua_predefinida} segundos")
 
 
 # -------------------- Monitoramento de Modo --------------------
@@ -172,6 +161,8 @@ def monitorar_modo():
             automatic()
         elif modo == "Predefinida":
             predefinido()
+        elif modo == "Manual":
+            manual()
         time.sleep(10)  # Intervalo entre as verificações
 
 
@@ -181,59 +172,69 @@ def read_and_display():
     """Lê e exibe os dados dos sensores no LCD e publica os valores no MQTT."""
     while True:
         try:
+            # Leitura dos dados do sensor DHT11
             temperature = read_temp()
             humidity = read_humidity()
             humidity_soil = read_soil()
 
             if temperature is None or humidity is None:
-                print("\nFalha ao obter leitura válida do sensor DHT11\n")
+                print("Falha ao obter leitura válida do sensor DHT11")
                 continue
 
+            # Exibindo os dados no LCD
             lcd.clear()
             lcd.write_string(f'Temp = {temperature:.2f} C')
             lcd.crlf()
             lcd.write_string(f'Hum = {humidity:.2f} %')
             time.sleep(5)
 
+            # Calculando e exibindo a umidade do solo
             MAX_VOLTAGE = 4.094
             MIN_VOLTAGE = 2.000
             solo = ((MAX_VOLTAGE - humidity_soil) / (MAX_VOLTAGE - MIN_VOLTAGE)) * 100
             lcd.clear()
             lcd.write_string(f'Solo = {solo:.1f} %')
 
-            print(f"\nTemperatura: {temperature:.2f} C")
-            print(f"Umidade: {humidity:.2f} %")
-            print(f"Solo: {solo:.1f} %\n")
+            # Exibindo os valores no console
+            print(f'Temp = {temperature:.2f} C')
+            print(f'Hum = {humidity:.2f} %')
+            print(f'Solo = {solo:.1f} %')
 
+            # Publicando os dados no MQTT
             client.publish("raspberry/sensors/temperature", f"{temperature}")
             client.publish("raspberry/sensors/humidity", f"{humidity}")
             client.publish("raspberry/sensors/soil", f"{solo}")
 
         except RuntimeError as e:
-            print(f"\nErro ao ler o sensor: {e}\n")
+            print("Erro ao ler o sensor: ", e)
 
         time.sleep(10)  # Espera antes da próxima leitura
 
 
 # -------------------- Execução do Programa --------------------
 
+# Inicia as threads
 sensor_thread = threading.Thread(target=read_and_display)
 monitor_thread = threading.Thread(target=monitorar_modo)
 sensor_thread.start()
 monitor_thread.start()
 
+# Configurações do MQTT
 client.on_connect = on_connect
 client.on_message = on_message
 client.connect("localhost", 1883, 60)
 client.loop_start()
 
+# Loop Principal
 try:
     while True:
         time.sleep(1)
+
 except KeyboardInterrupt:
-    print("\nPrograma interrompido pelo usuário\n")
+    print("Programa interrompido pelo usuário")
+
 finally:
     dhtDevice.exit()
     lcd.clear()
     GPIO.cleanup()
-    print("\nRecursos liberados\n")
+    print("Recursos liberados")
